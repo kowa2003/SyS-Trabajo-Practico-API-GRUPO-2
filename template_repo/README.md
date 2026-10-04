@@ -24,7 +24,10 @@ ISO 3382-1.
 
 | Nombre | Legajo | Rol |
 |--------|--------|-----|
-| ...    | ...    | ... |
+| Joaquin Vargas | 70837 | ... |
+| Rodrigo Sanchez | --- | ... |
+| Agustin Quaglia | --- | ... |
+| Mauro Zampietri | --- | ... |
 
 ## Requisitos previos
 
