@@ -25,7 +25,7 @@ ISO 3382-1.
 | Nombre | Legajo | Rol |
 |--------|--------|-----|
 | Joaquin Vargas | 70837 | ... |
-| Rodrigo Sanchez | --- | ... |
+| Rodrigo Sanchez | 52065 | ... |
 | Agustin Quaglia | --- | ... |
 | Mauro Zampietri | --- | ... |
 
