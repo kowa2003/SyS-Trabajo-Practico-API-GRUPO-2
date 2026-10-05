@@ -3,7 +3,7 @@
 API REST para procesamiento y analisis de respuestas al impulso segun la norma ISO 3382.
 
 <!-- Badge de CI: reemplazar <usuario>/<repo> por los datos del repositorio del grupo -->
-![CI](https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2/)
 ![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
 
 ## Descripcion
@@ -27,7 +27,7 @@ ISO 3382-1.
 | Joaquin Vargas | 70837 | ... |
 | Rodrigo Sanchez | 52065 | ... |
 | Agustin Quaglia | --- | ... |
-| Mauro Zampietri | --- | ... |
+| Mauro Zampietri | 61508 | ... |
 
 ## Requisitos previos
 
@@ -64,7 +64,7 @@ git push -u origin main
 ```
 
 3. El resto del grupo clona `rir-api` y listo. La carpeta `signal-systems/` se puede borrar.
-
+uv
 ## Instalacion y ejecucion
 
 ```bash
