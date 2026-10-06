@@ -21,17 +21,13 @@ jobs:
           enable-cache: true
 
       - name: Instalar dependencias (incluye el grupo dev)
-        working-directory: ./rir_api
         run: uv sync
 
       - name: Linter (ruff check)
-        working-directory: ./rir_api
-        run: uvx ruff check app/ tests/
+        run: uv run ruff check app/ tests/
 
       - name: Formato (ruff format --check)
-        working-directory: ./rir_api
-        run: uvx ruff format --check app/ tests/
+        run: uv run ruff format --check app/ tests/
 
       - name: Tests (pytest + cobertura)
-        working-directory: ./rir_api
         run: uv run pytest -q --cov=app
