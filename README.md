@@ -139,7 +139,7 @@ flowchart TB
         direction TB
         subgraph R["app/routers/"]
             RH["health.py<br/>GET /health"]
-            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep"]
+            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep]
             RM2["M2: /signals/synthetic-ir, filters.py"]
             RM3["M3: acoustics.py, utils.py"]
         end
@@ -155,7 +155,7 @@ flowchart TB
             VM3["M3: acoustic_parameters.py"]
         end
     end
-    L["NumPy · SciPy · sounddevice"]
+    L["NumPy · SciPy · sounddevice · FastAPI · Pydantic · Soundfile · "]
     C -->|"request HTTP + JSON"| RS
     RS -->|"valida con"| SS
     RS -->|"llama a"| PN
