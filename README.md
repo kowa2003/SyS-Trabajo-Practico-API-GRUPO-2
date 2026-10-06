@@ -24,10 +24,10 @@ ISO 3382-1.
 
 | Nombre | Legajo | Rol |
 |--------|--------|-----|
-| Joaquin Vargas | 70837 | ... |
-| Rodrigo Sanchez | 52065 | ... |
-| Agustin Quaglia | --- | ... |
-| Mauro Zampietri | 61508 | ... |
+| Joaquin Vargas | 70837 | Tester |
+| Rodrigo Sanchez | 52065 |  API Developer |
+| Agustin Quaglia | --- | Reviewer |
+| Mauro Zampietri | 61508 | Release Manager |
 
 ## Requisitos previos
 
