@@ -26,7 +26,7 @@ ISO 3382-1.
 |--------|--------|-----|
 | Joaquin Vargas | 70837 | Tester |
 | Rodrigo Sanchez | 52065 |  API Developer |
-| Agustin Quaglia | 71839 | Reviewer 2.0 |
+| Agustin Quaglia | 71839 | Reviewer |
 | Mauro Zampietri | 61508 | Release Manager |
 
 ## Requisitos previos
@@ -129,6 +129,43 @@ rir-api/
 Cada milestone expone lo que construye: los routers y schemas de `signals` se agregan en M1
 (y suman `synthetic-ir` en M2), los de `filters` en M2 y los de `acoustics` y `utils` en M3
 (ver los `TODO` en `app/main.py`).
+
+## Diagrama de la estructura
+
+```mermaid
+flowchart TB
+    C["Cliente<br/>Swagger · frontend · script"]
+    subgraph API["RIR-API (FastAPI)"]
+        direction TB
+        subgraph R["app/routers/"]
+            RH["health.py<br/>GET /health"]
+            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep"]
+            RM2["M2: /signals/synthetic-ir, filters.py"]
+            RM3["M3: acoustics.py, utils.py"]
+        end
+        subgraph SC["app/schemas/"]
+            SS["signals.py<br/>PinkNoiseRequest<br/>SineSweepRequest"]
+            SM["M2 y M3: ..."]
+        end
+        subgraph SV["app/services/"]
+            PN["pink_noise.py<br/>generate_pink_noise"]
+            SW["sine_sweep.py<br/>generate_sine_sweep_pair"]
+            IO["audio_io.py<br/>play_and_record"]
+            VM2["M2: signal_utils.py, filter.py"]
+            VM3["M3: acoustic_parameters.py"]
+        end
+    end
+    L["NumPy · SciPy · sounddevice"]
+    C -->|"request HTTP + JSON"| RS
+    RS -->|"valida con"| SS
+    RS -->|"llama a"| PN
+    RS -->|"llama a"| SW
+    PN --> L
+    SW --> L
+    IO --> L
+    classDef pendiente stroke-dasharray: 5 5
+    class RM2,RM3,SM,VM2,VM3 pendiente
+```
 
 ## Milestones y entregas (2C 2026)
 
