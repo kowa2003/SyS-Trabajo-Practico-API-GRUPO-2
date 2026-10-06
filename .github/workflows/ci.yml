@@ -21,6 +21,7 @@ jobs:
           enable-cache: true
 
       - name: Instalar dependencias (incluye el grupo dev)
+        run: cd rir_api
         run: uv sync
 
       - name: Linter (ruff check)
