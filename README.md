@@ -130,7 +130,7 @@ Cada milestone expone lo que construye: los routers y schemas de `signals` se ag
 (y suman `synthetic-ir` en M2), los de `filters` en M2 y los de `acoustics` y `utils` en M3
 (ver los `TODO` en `app/main.py`).
 
-## Diagrama de la estructura
+## Diagrama de arquitectura
 
 ```mermaid
 flowchart TB
@@ -139,9 +139,11 @@ flowchart TB
         direction TB
         subgraph R["app/routers/"]
             RH["health.py<br/>GET /health"]
-            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep"]
-            RM2["M2: /signals/synthetic-ir, filters.py"]
-            RM3["M3: acoustics.py, utils.py"]
+            RAudio["audio_http.py<br/>wav_response<br/>uploaded_file"]
+            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep"<br/>POST /signals/synthetic-ir"]
+            RFilters["filters.py<br/>POST /filters/single-band"]
+            RUtils["utils.py<br/>POST /utils/smoothing<br/>POST /utils/schroeder<br/>POST /utils/lundeby"]
+            RAcoustics["acoustics.py<br/>POST /acoustics/parameters"]
         end
         subgraph SC["app/schemas/"]
             SS["signals.py<br/>PinkNoiseRequest<br/>SineSweepRequest"]
@@ -164,7 +166,7 @@ flowchart TB
     SW --> L
     IO --> L
     classDef pendiente stroke-dasharray: 5 5
-    class RM2,RM3,SM,VM2,VM3 pendiente
+    class RFilters,RUtils,RAcoustics,SM,VM2,VM3 pendiente
 ```
 
 ## Milestones y entregas (2C 2026)
