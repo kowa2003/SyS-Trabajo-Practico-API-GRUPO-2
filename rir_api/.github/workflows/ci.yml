@@ -24,10 +24,10 @@ jobs:
         run: uv sync
 
       - name: Linter (ruff check)
-        run: uv run ruff check app/ tests/
+        run: uv run ruff check rir_api/ tests/
 
       - name: Formato (ruff format --check)
-        run: uv run ruff format --check app/ tests/
+        run: uv run ruff format --check rir_api/ tests/
 
       - name: Tests (pytest + cobertura)
-        run: uv run pytest -q --cov=app
+        run: uv run pytest -q --cov=rir_api
