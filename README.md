@@ -140,7 +140,7 @@ flowchart TB
         subgraph R["app/routers/"]
             RH["health.py<br/>GET /health"]
             RAudio["audio_http.py<br/>wav_response<br/>uploaded_file"]
-            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep"<br/>POST /signals/synthetic-ir"]
+            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep<br/>POST /signals/synthetic-ir"]
             RFilters["filters.py<br/>POST /filters/single-band"]
             RUtils["utils.py<br/>POST /utils/smoothing<br/>POST /utils/schroeder<br/>POST /utils/lundeby"]
             RAcoustics["acoustics.py<br/>POST /acoustics/parameters"]
