@@ -45,4 +45,30 @@ def generate_pink_noise(duration: float, fs: int) -> np.ndarray:
        1/f noise. JASA 63(1), 258-263.
     .. [2] https://www.firstpr.com.au/dsp/pink-noise/
     """
-    raise NotImplementedError("Implementar en Milestone 1")
+    # 1. Calcular cantidad total de muestras
+    num_samples = int(duration * fs)
+
+    # 2. Definir cantidad de generadores (N_bits)
+    num_rows = 16
+
+    # 3. Crear matriz para los generadores de ruido
+    array = np.empty((num_rows, num_samples))
+
+    # El primer generador se actualiza en cada muestra (ruido blanco puro)
+    array[0, :] = np.random.randn(num_samples)
+
+    # 4. Actualizar los demás generadores cada 2^i muestras
+    for i in range(1, num_rows):
+        step = 2**i
+        # Generamos valores aleatorios solo para los momentos de cambio
+        random_values = np.random.randn(num_samples // step + 2)
+        # Repetimos esos valores para mantenerlos constantes y recortamos al tamaño exacto
+        array[i, :] = np.repeat(random_values, step)[:num_samples]
+
+    # 5. Sumar las salidas de todos los generadores (colapsar las filas)
+    pink_noise = np.sum(array, axis=0)
+
+    # 6. Normalizar la señal resultante al rango [-1, 1]
+    pink_noise = pink_noise / np.max(np.abs(pink_noise))
+
+    return pink_noise
