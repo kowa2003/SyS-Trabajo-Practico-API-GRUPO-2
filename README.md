@@ -26,7 +26,7 @@ ISO 3382-1.
 |--------|--------|-----|
 | Joaquin Vargas | 70837 | Tester |
 | Rodrigo Sanchez | 52065 |  API Developer |
-| Agustin Quaglia | 71839 | Reviewer |
+| Agustin Quaglia | 71839 | Reviewer 2.0 |
 | Mauro Zampietri | 61508 | Release Manager |
 
 ## Requisitos previos
