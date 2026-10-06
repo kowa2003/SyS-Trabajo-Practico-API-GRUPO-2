@@ -139,11 +139,17 @@ flowchart TB
         direction TB
         subgraph R["app/routers/"]
             RH["health.py<br/>GET /health"]
+<<<<<<< HEAD
             RAudio["audio_http.py<br/>wav_response<br/>uploaded_file"]
             RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep"<br/>POST /signals/synthetic-ir"]
             RFilters["filters.py<br/>POST /filters/single-band"]
             RUtils["utils.py<br/>POST /utils/smoothing<br/>POST /utils/schroeder<br/>POST /utils/lundeby"]
             RAcoustics["acoustics.py<br/>POST /acoustics/parameters"]
+=======
+            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep]
+            RM2["M2: /signals/synthetic-ir, filters.py"]
+            RM3["M3: acoustics.py, utils.py"]
+>>>>>>> 185a45680bc2fe231988c26cf1cfa96223971eb4
         end
         subgraph SC["app/schemas/"]
             SS["signals.py<br/>PinkNoiseRequest<br/>SineSweepRequest"]
@@ -157,7 +163,7 @@ flowchart TB
             VM3["M3: acoustic_parameters.py"]
         end
     end
-    L["NumPy · SciPy · sounddevice"]
+    L["NumPy · SciPy · sounddevice · FastAPI · Pydantic · Soundfile · "]
     C -->|"request HTTP + JSON"| RS
     RS -->|"valida con"| SS
     RS -->|"llama a"| PN
