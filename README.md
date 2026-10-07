@@ -207,6 +207,31 @@ flowchart TB
     SF --> L
     AP --> L
 ```
+## Branching Strategy
+
+Para el desarrollo de la API, el equipo utilizará una estrategia basada en **Feature Branches** combinada con **Pull Requests**, asegurando que el código principal siempre sea estable y funcional. 
+
+Las reglas del flujo de trabajo son las siguientes:
+
+### 1. Rama Principal (`main`)
+Es la rama base del proyecto. El código aquí siempre debe funcionar y pasar todos los tests.
+> **Regla estricta:** Ningún integrante del equipo puede hacer un `git push` directo a `main`.
+
+### 2. Ramas de Desarrollo (Feature Branches)
+Para cada tarea nueva (issue, señal, endpoint), el desarrollador responsable debe crear una rama aislada a partir de `main`.
+* **Nomenclatura:** Se usará el prefijo `feature/` seguido del nombre de la tarea.
+* **Ejemplos:** `feature/ruido-rosa`, `feature/sine-sweep`.
+
+### 3. Integración mediante Pull Requests (PR)
+Una vez terminada la tarea en la rama local, se sube a GitHub y se abre un Pull Request hacia `main`. 
+
+Para que el PR sea aprobado e integrado (*Merge*), debe cumplir dos condiciones obligatorias:
+* **Aprobación de Integración Continua (CI):** GitHub Actions debe dar luz verde confirmando que el linter (`Ruff`) y los tests (`Pytest`) pasaron exitosamente.
+* **Code Review:** Al menos un compañero del equipo (preferentemente con el rol de *Reviewer*) debe revisar el código y aprobar el PR.
+
+
+
+
 
 ## Milestones y entregas (2C 2026)
 
