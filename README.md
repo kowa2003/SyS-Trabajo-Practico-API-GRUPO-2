@@ -134,39 +134,78 @@ Cada milestone expone lo que construye: los routers y schemas de `signals` se ag
 
 ```mermaid
 flowchart TB
-    C["Cliente<br/>Swagger · frontend · script"]
+    %% Definición de colores principales
+    classDef m0 stroke:#3b82f6,stroke-width:3px
+    classDef m1 stroke:#a855f7,stroke-width:3px
+    classDef m2 stroke:#22c55e,stroke-width:3px
+    classDef m3 stroke:#f97316,stroke-width:3px
+    
+    subgraph Leyenda["Leyenda de Colores (Hitos)"]
+        Leg0["M0: El plano"]:::m0 ~~~ Leg1["M1: Generación"]:::m1 ~~~ Leg2["M2: Procesamiento"]:::m2 ~~~ Leg3["M3: Producto final"]:::m3
+    end
+
+    Leyenda ~~~ C
+
+    C["Cliente<br/>Swagger · frontend · script"]:::m0
+    
     subgraph API["RIR-API (FastAPI)"]
         direction TB
-        subgraph R["app/routers/"]
-            RH["health.py<br/>GET /health"]
-            RAudio["audio_http.py<br/>wav_response<br/>uploaded_file"]
-            RS["signals.py<br/>POST /signals/pink-noise<br/>POST /signals/sine-sweep<br/>POST /signals/synthetic-ir"]
-            RFilters["filters.py<br/>POST /filters/single-band"]
-            RUtils["utils.py<br/>POST /utils/smoothing<br/>POST /utils/schroeder<br/>POST /utils/lundeby"]
-            RAcoustics["acoustics.py<br/>POST /acoustics/parameters"]
+        
+        subgraph R["Routers (app/routers/)"]
+            RH["health.py<br/>GET /health"]:::m0
+            RAudio["audio_http.py<br/>wav_response<br/>uploaded_file"]:::m0
+            RSignals["<b>signals.py</b><br/><span style='color:#a855f7'>POST /signals/pink-noise</span><br/><span style='color:#a855f7'>POST /signals/sine-sweep</span><br/><span style='color:#22c55e'>POST /signals/synthetic-ir</span>"]
+            RFilters["filters.py<br/>POST /filters/single-band"]:::m2
+            RUtils["utils.py<br/>POST /utils/smoothing<br/>POST /utils/schroeder<br/>POST /utils/lundeby"]:::m3
+            RAcoustics["acoustics.py<br/>POST /acoustics/parameters"]:::m3
         end
-        subgraph SC["app/schemas/"]
-            SS["signals.py<br/>PinkNoiseRequest<br/>SineSweepRequest"]
-            SM["M2 y M3: ..."]
+        
+        subgraph SC["Schemas (app/schemas/)"]
+            SResponses["<b>responses.py</b><br/><span style='color:#3b82f6'>HealthResponse</span><br/><span style='color:#22c55e'>BandAnalysisResponse</span>"]
+            SSignals["<b>signals.py</b><br/><span style='color:#a855f7'>PinkNoiseRequest</span><br/><span style='color:#a855f7'>SineSweepRequest</span><br/><span style='color:#22c55e'>SyntheticIRRequest</span>"]
+            SUtils["utils.py<br/>SmoothingRequest<br/>SchroederResponse<br/>LundebyResponse"]:::m3
         end
-        subgraph SV["app/services/"]
-            PN["pink_noise.py<br/>generate_pink_noise"]
-            SW["sine_sweep.py<br/>generate_sine_sweep_pair"]
-            IO["audio_io.py<br/>play_and_record"]
-            VM2["M2: signal_utils.py, filter.py"]
-            VM3["M3: acoustic_parameters.py"]
+        
+        subgraph SV["Services (app/services/)"]
+            PN["pink_noise.py<br/>generate_pink_noise"]:::m1
+            SW["sine_sweep.py<br/>generate_sine_sweep_pair"]:::m1
+            IO["audio_io.py<br/>play_and_record"]:::m1
+            SU["signal_utils.py<br/>load_audio<br/>generate_synthetic_ir<br/>get_impulse_response<br/>logarithmic_scale_conversion"]:::m2
+            SF["filter.py<br/>filter_single_band"]:::m2
+            AP["acoustic_parameters.py<br/>apply_smoothing<br/>apply_schroeder_integral<br/>linear_regression<br/>calculate_parameters_from_ir<br/>apply_lundeby"]:::m3
         end
     end
-    L["NumPy · SciPy · sounddevice · FastAPI · Pydantic · Soundfile · "]
-    C -->|"request HTTP + JSON"| RS
-    RS -->|"valida con"| SS
-    RS -->|"llama a"| PN
-    RS -->|"llama a"| SW
+    
+    subgraph L["Librerías"]
+        L_FA["FastAPI"]:::m0 ~~~ L_PY["Pydantic"]:::m0 ~~~ L_NP["NumPy"]:::m1 ~~~ L_SP["SciPy"]:::m1 ~~~ L_SD["sounddevice"]:::m1 ~~~ L_SF["soundfile"]:::m1
+    end
+
+    %% Conexiones y flujo de datos
+    C -->|"request HTTP + JSON"| RSignals
+    C --> RFilters
+    C --> RUtils
+    C --> RAcoustics
+    C --> RH
+    
+    RSignals -->|"valida con"| SSignals
+    RFilters --> SResponses
+    RUtils --> SUtils
+    
+    RSignals -->|"llama a"| PN
+    RSignals -->|"llama a"| SW
+    RSignals -->|"llama a"| SU
+    
+    RFilters --> SF
+    RUtils --> AP
+    RAcoustics --> AP
+    
+    %% Los servicios usan las librerías
     PN --> L
     SW --> L
     IO --> L
-    classDef pendiente stroke-dasharray: 5 5
-    class RFilters,RUtils,RAcoustics,SM,VM2,VM3 pendiente
+    SU --> L
+    SF --> L
+    AP --> L
 ```
 
 ## Milestones y entregas (2C 2026)
