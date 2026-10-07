@@ -140,18 +140,17 @@ flowchart TB
     classDef m2 stroke:#22c55e,stroke-width:3px
     classDef m3 stroke:#f97316,stroke-width:3px
     
-    subgraph Leyenda["Leyenda de Colores (Hitos)"]
+    subgraph Leyenda["<b>Leyenda de Colores (Hitos)</b>"]
+        direction LR
         Leg0["M0: El plano"]:::m0 ~~~ Leg1["M1: Generación"]:::m1 ~~~ Leg2["M2: Procesamiento"]:::m2 ~~~ Leg3["M3: Producto final"]:::m3
     end
 
-    Leyenda ~~~ C
-
-    C["Cliente<br/>Swagger · frontend · script"]:::m0
+    C["<b>Cliente</b><br/>Swagger · frontend · script"]:::m0
     
     subgraph API["RIR-API (FastAPI)"]
         direction TB
         
-        subgraph R["Routers (app/routers/)"]
+        subgraph R["<b>Routers</b> (app/routers/)"]
             RH["health.py<br/>GET /health"]:::m0
             RAudio["audio_http.py<br/>wav_response<br/>uploaded_file"]:::m0
             RSignals["<b>signals.py</b><br/><span style='color:#a855f7'>POST /signals/pink-noise</span><br/><span style='color:#a855f7'>POST /signals/sine-sweep</span><br/><span style='color:#22c55e'>POST /signals/synthetic-ir</span>"]
@@ -160,13 +159,13 @@ flowchart TB
             RAcoustics["acoustics.py<br/>POST /acoustics/parameters"]:::m3
         end
         
-        subgraph SC["Schemas (app/schemas/)"]
+        subgraph SC["<b>Schemas</b> (app/schemas/)"]
             SResponses["<b>responses.py</b><br/><span style='color:#3b82f6'>HealthResponse</span><br/><span style='color:#22c55e'>BandAnalysisResponse</span>"]
             SSignals["<b>signals.py</b><br/><span style='color:#a855f7'>PinkNoiseRequest</span><br/><span style='color:#a855f7'>SineSweepRequest</span><br/><span style='color:#22c55e'>SyntheticIRRequest</span>"]
             SUtils["utils.py<br/>SmoothingRequest<br/>SchroederResponse<br/>LundebyResponse"]:::m3
         end
         
-        subgraph SV["Services (app/services/)"]
+        subgraph SV["<b>Services</b> (app/services/)"]
             PN["pink_noise.py<br/>generate_pink_noise"]:::m1
             SW["sine_sweep.py<br/>generate_sine_sweep_pair"]:::m1
             IO["audio_io.py<br/>play_and_record"]:::m1
@@ -176,7 +175,8 @@ flowchart TB
         end
     end
     
-    subgraph L["Librerías"]
+    subgraph L["<b>Librerías</b>"]
+        direction LR
         L_FA["FastAPI"]:::m0 ~~~ L_PY["Pydantic"]:::m0 ~~~ L_NP["NumPy"]:::m1 ~~~ L_SP["SciPy"]:::m1 ~~~ L_SD["sounddevice"]:::m1 ~~~ L_SF["soundfile"]:::m1
     end
 
