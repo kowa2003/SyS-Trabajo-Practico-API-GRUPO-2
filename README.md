@@ -31,56 +31,74 @@ ISO 3382-1.
 - [uv](https://docs.astral.sh/uv/) (gestor de paquetes y entornos virtuales)
 - git y una cuenta de GitHub
 
-## Arranque: crear el repositorio del grupo
+## Instalación y Ejecución
 
-Cada grupo trabaja en **un repositorio nuevo propio** y copia adentro el contenido de este
-template (no es un fork).
+1. **Clonar el repositorio:**
+   ```bash
+   git clone [https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git](https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git)
+   cd SyS-Trabajo-Practico-API-GRUPO-2
+   ```
 
-1. Una persona del grupo crea en GitHub un repositorio **vacio** (por ejemplo `rir-api`,
-   sin README ni .gitignore) y agrega al resto del grupo y a los docentes
-   (**@maxiyommi** y **@jero-scafati**) como colaboradores
-   (*Settings → Collaborators → Add people*).
-2. Copiar el template y hacer el primer commit:
+2. **Instalar las dependencias del entorno con `uv`:**
+   ```bash
+   uv sync
+   ```
 
-```bash
-# Bajar el repositorio de la materia (solo la ultima version)
-git clone --depth 1 https://github.com/maxiyommi/signal-systems.git
-
-# Clonar el repositorio (vacio) del grupo
-git clone https://github.com/<usuario>/rir-api.git
-
-# Copiar el contenido del template (incluye archivos ocultos: .github/, .gitignore)
-cp -r signal-systems/trabajo_practico/template_repo/. rir-api/
-
-cd rir-api
-git add .
-git commit -m "chore: estructura inicial desde el template de la catedra"
-git branch -M main
-git push -u origin main
-```
-
-3. El resto del grupo clona `rir-api` y listo. La carpeta `signal-systems/` se puede borrar.
-uv
-## Instalacion y ejecucion
-
-```bash
-# Crear el entorno e instalar dependencias (incluye las de desarrollo: pytest, ruff, ...)
-uv sync
-
-# Iniciar la API con hot-reload
-uv run uvicorn app.main:app --reload
-
-# Correr los tests
-uv run pytest
-```
-
-La API queda disponible en `http://localhost:8000`. Documentacion interactiva:
+3. **Levantar el servidor de desarrollo (FastAPI):**
+   ```bash
+   uv run uvicorn app.main:app --reload
+   ```
+   *La API quedará disponible en `http://localhost:8000` (endpoint de verificación en `/health` y documentación interactiva en `/docs`). Documentacion interactiva:*
 
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
-`uv sync` genera un `uv.lock` con las versiones exactas instaladas: **commitéenlo** en el
-repositorio del grupo para que todos (y el CI) usen las mismas versiones.
+4. **Ejecutar la suite de pruebas:**
+
+   ```bash
+   uv run pytest
+   ```
+### Convención de Commits (Conventional Commits)
+
+En este repositorio utilizamos la especificación **[Conventional Commits v1.0.0](https://www.conventionalcommits.org/es/v1.0.0/)** para mantener un historial de cambios claro, estructurado y fácil de revisar en cada Pull Request.
+
+#### Estructura del mensaje
+
+Todo mensaje de commit debe seguir el siguiente formato:
+
+```text
+<tipo>(<ámbito opcional>): <descripción breve en minúscula>
+
+[cuerpo opcional con más detalles]
+
+[nota de pie opcional, ej: Closes #issue]
+```
+
+#### Tipos de commit permitidos
+
+| Tipo | Uso principal | Ejemplo en este proyecto |
+| :--- | :--- | :--- |
+| **`feat`** | Nueva funcionalidad en el código | `feat(services): implementar generador en pink_noise.py` |
+| **`fix`** | Corrección de un bug o error | `fix(acoustics): corregir cálculo de parámetros en banda única` |
+| **`docs`** | Cambios exclusivos en la documentación | `docs(readme): actualizar diagrama de arquitectura y guía de instalación` |
+| **`test`** | Agregado o ajuste de pruebas con `pytest` | `test(filters): agregar test unitario para filter_single_band` |
+| **`refactor`** | Mejora de código sin cambiar su comportamiento | `refactor(schemas): limpiar modelos en responses.py` |
+| **`chore`** | Tareas de mantenimiento, configuración o limpieza | `chore: eliminar archivo de prueba Test_1` |
+| **`ci`** | Cambios en flujos de integración continua | `ci(actions): configurar ejecución automática de pytest` |
+
+#### Reglas rápidas para el equipo
+
+1. **Usar verbos en infinitivo o imperativo** en la descripción, sin punto final (ej. `agregar`, `corregir`, `actualizar`).
+2. **Cambios que rompen compatibilidad (*Breaking Changes*):** Si un cambio modifica el formato de entrada/salida de un endpoint existente, se agrega un signo `!` después del tipo/ámbito (ej. `feat(api)!: cambiar formato de salida en /acoustics/parameters`).
+3. **Vincular con Issues:** Si el commit resuelve un Issue del proyecto, referenciarlo al final (ej. `feat(services): agregar función generate_synthetic_ir (#8)`).
+
+#### Ejemplo de uso por consola
+
+```bash
+git add app/services/pink_noise.py
+git commit -m "feat(services): implementar generación de ruido rosa"
+git push origin develop
+```
 
 ## Estructura del proyecto
 
