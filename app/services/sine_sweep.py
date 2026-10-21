@@ -39,4 +39,26 @@ def generate_sine_sweep_pair(
     .. [1] Farina, A. (2000). "Simultaneous measurement of impulse response
        and distortion with a swept-sine technique." 108th AES Convention.
     """
-    raise NotImplementedError("Implementar en Milestone 1")
+    # 1. Crear el vector de tiempo discreto
+    total_samples = int(duration * fs)
+    t = np.linspace(0, duration, total_samples, endpoint=False)
+
+    # Constantes de la formula
+    T = duration
+    R = np.log(f2 / f1)
+
+    # 2. Generar el sine sweep
+    # Formula: x(t) = sin[2*pi*f1*T / ln(f2/f1) * (exp(t*ln(f2/f1)/T) - 1)]
+    fase = (2 * np.pi * f1 * T / R) * (np.exp(t * R / T) - 1)
+    sweep = np.sin(fase)
+
+    # 3. Generar el filtro inverso (tecnica de Farina)
+    sweep_invertido = sweep[::-1]
+    # Correccion de amplitud: A(t) = exp(-t*ln(f2/f1)/T)
+    amplitud = np.exp(-t * R / T)
+    inverse_filter = sweep_invertido * amplitud
+
+    # 4. Normalizacion al rango [-1, 1]
+    sweep = sweep / np.max(np.abs(sweep))
+    inverse_filter = inverse_filter / np.max(np.abs(inverse_filter))
+    return sweep, inverse_filter
