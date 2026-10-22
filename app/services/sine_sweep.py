@@ -44,18 +44,18 @@ def generate_sine_sweep_pair(
     t = np.linspace(0, duration, total_samples, endpoint=False)
 
     # Constantes de la formula
-    T = duration
-    R = np.log(f2 / f1)
+    duracion = duration
+    razon_log = np.log(f2 / f1)
 
     # 2. Generar el sine sweep
     # Formula: x(t) = sin[2*pi*f1*T / ln(f2/f1) * (exp(t*ln(f2/f1)/T) - 1)]
-    fase = (2 * np.pi * f1 * T / R) * (np.exp(t * R / T) - 1)
+    fase = (2 * np.pi * f1 * duracion / razon_log) * (np.exp(t * razon_log / duracion) - 1)
     sweep = np.sin(fase)
 
     # 3. Generar el filtro inverso (tecnica de Farina)
     sweep_invertido = sweep[::-1]
     # Correccion de amplitud: A(t) = exp(-t*ln(f2/f1)/T)
-    amplitud = np.exp(-t * R / T)
+    amplitud = np.exp(-t * razon_log / duracion)
     inverse_filter = sweep_invertido * amplitud
 
     # 4. Normalizacion al rango [-1, 1]
