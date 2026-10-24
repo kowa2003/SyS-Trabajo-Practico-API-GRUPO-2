@@ -48,7 +48,7 @@ ISO 3382-1.
    ```bash
    uv run uvicorn app.main:app --reload
    ```
-   *La API quedará disponible en `http://localhost:8000` (endpoint de verificación en `/health` y documentación interactiva en `/docs`). Documentacion interactiva:*
+   La API quedará disponible en `http://localhost:8000` (endpoint de verificación en `/health` y documentación interactiva en `/docs`). Documentacion interactiva:
 
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
@@ -243,9 +243,32 @@ Para que el PR sea aprobado e integrado (*Merge*), debe cumplir dos condiciones 
 * **Aprobación de Integración Continua (CI):** GitHub Actions debe dar luz verde confirmando que el linter (`Ruff`) y los tests (`Pytest`) pasaron exitosamente.
 * **Code Review:** Al menos un compañero del equipo (preferentemente con el rol de *Reviewer*) debe revisar el código y aprobar el PR.
 
+## Ejemplos de uso con curl
 
+Con el servidor en ejecución, se pueden generar
+señales WAV mediante peticiones HTTP.
 
+### Generar ruido rosa
 
+```bash
+curl -X POST http://localhost:8000/api/v1/signals/pink-noise \
+  -H "Content-Type: application/json" \
+  -d '{"duration": 5, "sample_rate": 44100}' \
+  -o pink_noise.wav
+```
+
+### Generar sine sweep
+
+```bash
+curl -X POST http://localhost:8000/api/v1/signals/sine-sweep \
+  -H "Content-Type: application/json" \
+  -d '{"duration": 3, "f1": 20, "f2": 20000, "sample_rate": 44100, "inverse": false}' \
+  -o sine_sweep.wav
+```
+
+Para obtener el filtro inverso, se repite la
+segunda petición con `inverse: true` y se guarda
+el archivo como `inverse_filter.wav`.
 
 ## Milestones y entregas (2C 2026)
 
