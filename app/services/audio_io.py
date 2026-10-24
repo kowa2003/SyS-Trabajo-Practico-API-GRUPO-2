@@ -39,7 +39,8 @@ def play_and_record(signal: np.ndarray, fs: int, record_duration: float) -> np.n
     # Validar que record_duration sea mayor o igual a la duración de la señal
     if target_samples < signal_samples:
         raise ValueError(
-            f"record_duration ({record_duration}s) debe ser mayor o igual a la duración de la señal ({signal_samples / fs:.2f}s)."
+            f"record_duration ({record_duration}s) debe ser mayor o igual "
+            f"a la duración de la señal ({signal_samples / fs:.2f}s)."
         )
 
     # Calcular margen sobrante para pre-roll (latencia) y post-roll (reverberación)
@@ -82,4 +83,6 @@ def play_and_record(signal: np.ndarray, fs: int, record_duration: float) -> np.n
 
     except Exception as e:
         # Captura PortAudioError u otras excepciones del mock y relanza RuntimeError
-        raise RuntimeError(f"No hay un dispositivo de audio disponible para grabar/reproducir: {e}")
+        raise RuntimeError(
+            f"No hay un dispositivo de audio disponible para grabar/reproducir: {e}"
+        ) from e

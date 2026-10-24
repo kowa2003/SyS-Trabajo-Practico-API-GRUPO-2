@@ -16,9 +16,11 @@ async def pink_noise(req: PinkNoiseRequest):
 
 @router.post("/sine-sweep")
 async def sine_sweep(req: SineSweepRequest):
-    if req.f1 >= req.f2:
-        raise ValueError("f1 tiene que ser menor que f2")
-    sweep, inverse_filter = generate_sine_sweep_pair(req.duration, req.f1, req.f2, req.sample_rate)
+    if req.start_freq >= req.end_freq:
+        raise ValueError("start_freq tiene que ser menor que end_freq")
+    sweep, inverse_filter = generate_sine_sweep_pair(
+        req.duration, req.start_freq, req.end_freq, req.sample_rate
+    )
     return (
         wav_response(sweep, req.sample_rate, "sine_sweep.wav")
         if not req.inverse
