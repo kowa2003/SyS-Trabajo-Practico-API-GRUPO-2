@@ -323,6 +323,17 @@ el archivo como `inverse_filter.wav`.
 - [ ] Seccion "Validacion" en este README, `AI_LOG.md` y presentacion oral.
 - [ ] (Opcional) `apply_lundeby()`.
 
+## Validacion M1
+### M1
+### Ruido rosa
+![Espectro del ruido rosa](docs/m1/espectro_ruido_rosa.png)
+
+Pendiente medida: aprox. -25 dB (100 Hz), -35 dB (1 kHz) y -45 dB (10 kHz),
+es decir, unos -10 dB/decada (≈ -3 dB/octava).
+
+
+
+
 ## Tests
 
 Las funciones de `app/services/` vienen como *stubs* que lanzan `NotImplementedError`. Sus
