@@ -35,7 +35,7 @@ ISO 3382-1.
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone [https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git](https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git)
+   git clone https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git
    cd SyS-Trabajo-Practico-API-GRUPO-2
    ```
 
@@ -95,11 +95,16 @@ Todo mensaje de commit debe seguir el siguiente formato:
 #### Ejemplo de uso por consola
 
 ```bash
-git add app/services/pink_noise.py
-git commit -m "feat(services): implementar generación de ruido rosa"
-git push origin develop
-```
+git switch develop
+git pull origin develop
+git switch -c feature/pink-noise
 
+# Después de implementar la funcionalidad
+git add app/services/pink_noise.py
+git commit -m "feat(services): implementar generacion de ruido rosa"
+git push -u origin feature/pink-noise
+```
+Después del push, abrir un Pull Request desde `feature/pink-noise` hacia `develop`.
 ## Estructura del proyecto
 
 ```
@@ -112,8 +117,11 @@ rir-api/
 │   │   ├── __init__.py
 │   │   ├── health.py              # GET /health (M0)
 │   │   └── audio_http.py          # wav_response y uploaded_file (ya resueltas)
+│   │   └── signals.py             # Endpoints de generación (M1)
 │   ├── schemas/
 │   │   └── __init__.py            # Modelos Pydantic de request/response (desde M1)
+│   │   └── responses.py
+│   │   └── signals.py             # Modelos de entrada (M1)
 │   └── services/
 │       ├── __init__.py
 │       ├── pink_noise.py          # generate_pink_noise (M1)
@@ -134,6 +142,10 @@ rir-api/
 ├── data/                          # Mediciones y audios locales (ignorado por git)
 ├── docs/
 │   └── README.md                  # Guia para la documentacion (graficas de validacion, etc.)
+│   └── m1/                       
+│        ├── espectro_ruido_rosa.png
+│        ├── espectrograma_sine_sweep.png
+│        └── convolucion_sweep_filtro_inverso.png
 ├── .github/workflows/ci.yml       # CI: ruff + pytest en cada push/PR
 ├── .gitignore
 ├── pyproject.toml                 # Dependencias y configuracion (ruff, pytest)
@@ -223,25 +235,40 @@ flowchart TB
 ```
 ## Branching Strategy
 
-Para el desarrollo de la API, el equipo utilizará una estrategia basada en **Feature Branches** combinada con **Pull Requests**, asegurando que el código principal siempre sea estable y funcional. 
+El equipo utiliza Feature Branches y Pull Requests,
+con una rama de integración antes de cada entrega.
 
-Las reglas del flujo de trabajo son las siguientes:
+### Rama principal (`main`)
+Contiene las versiones estables y entregables del proyecto.
+No se permiten pushes directos. Los cambios ingresan
+mediante Pull Requests revisados y con CI aprobado.
 
-### 1. Rama Principal (`main`)
-Es la rama base del proyecto. El código aquí siempre debe funcionar y pasar todos los tests.
-> **Regla estricta:** Ningún integrante del equipo puede hacer un `git push` directo a `main`.
+### Rama de integración (`develop`)
+Reúne las funcionalidades desarrolladas por el equipo.
+Se utiliza para ejecutar pruebas de integración antes
+de incorporar los cambios a `main`.
 
-### 2. Ramas de Desarrollo (Feature Branches)
-Para cada tarea nueva (issue, señal, endpoint), el desarrollador responsable debe crear una rama aislada a partir de `main`.
-* **Nomenclatura:** Se usará el prefijo `feature/` seguido del nombre de la tarea.
-* **Ejemplos:** `feature/ruido-rosa`, `feature/sine-sweep`.
+### Ramas de trabajo
+Cada tarea o issue se desarrolla en una rama independiente,
+creada preferentemente desde `develop`.
 
-### 3. Integración mediante Pull Requests (PR)
-Una vez terminada la tarea en la rama local, se sube a GitHub y se abre un Pull Request hacia `main`. 
+Convenciones de nombres:
+- `feature/nombre`: nuevas funcionalidades.
+- `fix/nombre`: correcciones de errores.
+- `docs/nombre`: documentación.
+- `test/nombre`: pruebas automatizadas.
 
-Para que el PR sea aprobado e integrado (*Merge*), debe cumplir dos condiciones obligatorias:
-* **Aprobación de Integración Continua (CI):** GitHub Actions debe dar luz verde confirmando que el linter (`Ruff`) y los tests (`Pytest`) pasaron exitosamente.
-* **Code Review:** Al menos un compañero del equipo (preferentemente con el rol de *Reviewer*) debe revisar el código y aprobar el PR.
+### Flujo de trabajo
+1. Crear una rama desde `develop`.
+2. Implementar los cambios y realizar commits descriptivos.
+3. Abrir un Pull Request hacia `develop`.
+4. Verificar Ruff, Pytest y la revisión de un compañero.
+5. Integrar los cambios en `develop`.
+6. Para cada entrega, abrir un PR de `develop` hacia `main`.
+7. Una vez aprobado, realizar el merge y crear el tag
+   correspondiente al milestone.
+
+Se utiliza la convención Conventional Commits.
 
 ## Ejemplos de uso con curl
 
@@ -296,12 +323,12 @@ el archivo como `inverse_filter.wav`.
 
 ### M1 · Generacion de senales (`v0.1.0`)
 
-- [ ] `generate_pink_noise()` en `app/services/pink_noise.py` (Voss-McCartney recomendado).
-- [ ] `generate_sine_sweep_pair()` (sweep + filtro inverso) en `app/services/sine_sweep.py`.
-- [ ] `play_and_record()` en `app/services/audio_io.py`.
-- [ ] Endpoints `POST /api/v1/signals/pink-noise` y `POST /api/v1/signals/sine-sweep` (devuelven WAV),
+- [x] `generate_pink_noise()` en `app/services/pink_noise.py` (Voss-McCartney recomendado).
+- [x] `generate_sine_sweep_pair()` (sweep + filtro inverso) en `app/services/sine_sweep.py`.
+- [x] `play_and_record()` en `app/services/audio_io.py`.
+- [x] Endpoints `POST /api/v1/signals/pink-noise` y `POST /api/v1/signals/sine-sweep` (devuelven WAV),
       con sus schemas en `app/schemas/signals.py`.
-- [ ] Tests de `tests/test_generacion.py` y los de M1 en `tests/test_api.py` pasando;
+- [x] Tests de `tests/test_generacion.py` y los de M1 en `tests/test_api.py` pasando;
       graficas de validacion en `docs/m1/`.
 
 ### M2 · Procesamiento de la RI (`v0.2.0`)
