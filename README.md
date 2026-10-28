@@ -262,7 +262,7 @@ curl -X POST http://localhost:8000/api/v1/signals/pink-noise \
 ```bash
 curl -X POST http://localhost:8000/api/v1/signals/sine-sweep \
   -H "Content-Type: application/json" \
-  -d '{"duration": 3, "f1": 20, "f2": 20000, "sample_rate": 44100, "inverse": false}' \
+  -d '{"duration": 3, "start_freq": 20, "end_freq": 20000, "sample_rate": 44100, "inverse": false}' \
   -o sine_sweep.wav
 ```
 
