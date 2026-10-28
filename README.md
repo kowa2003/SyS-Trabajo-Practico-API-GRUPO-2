@@ -379,11 +379,18 @@ el archivo como `inverse_filter.wav`.
 Pendiente medida: aprox. -25 dB (100 Hz), -35 dB (1 kHz) y -45 dB (10 kHz),
 es decir, unos -10 dB/decada (≈ -3 dB/octava).
 
+<<<<<<< HEAD
+### Convolución sweep*inverso
+![Convolución del sinesweep con el filtro inverso](docs/m1/convolucion_sinesweep_con_filtro_inv.jpg)
+
+Se puede observar que se parece a un impulso. 
+=======
 ### Sine sweep
 
 ![Espectrograma del sine sweep](docs/m1/espectrograma_sine_sweep.jpeg)
 
 ![Convolucion del sweep con su filtro inverso](docs/m1/convolucion_sweep_filtro_inverso.jpeg)
+>>>>>>> b5baa2fd5c76bca3fbdb67b32aabf51930c9d600
 
 
 ## Tests
