@@ -145,7 +145,11 @@ rir-api/
 │   └── m1/                       
 │        ├── espectro_ruido_rosa.png
 │        ├── espectrograma_sine_sweep.png
-│        └── convolucion_sweep_filtro_inverso.png
+│        ├── convolucion_sweep_filtro_inverso.png
+│        ├── prueba_grabacion.py
+│        ├── grafica_grabacion.py
+│        ├── grabacion_real_m1.wav
+│        └── grabacion_real.png
 ├── .github/workflows/ci.yml       # CI: ruff + pytest en cada push/PR
 ├── .gitignore
 ├── pyproject.toml                 # Dependencias y configuracion (ruff, pytest)
@@ -372,26 +376,37 @@ el archivo como `inverse_filter.wav`.
 - [ ] (Opcional) `apply_lundeby()`.
 
 ## Validacion M1
-### M1
-### Ruido rosa
+### Ruido rosa:
 ![Espectro del ruido rosa](docs/m1/espectro_ruido_rosa.png)
 
 Pendiente medida: aprox. -25 dB (100 Hz), -35 dB (1 kHz) y -45 dB (10 kHz),
 es decir, unos -10 dB/decada (≈ -3 dB/octava).
 
-<<<<<<< HEAD
-### Convolución sweep*inverso
-![Convolución del sinesweep con el filtro inverso](docs/m1/convolucion_sinesweep_con_filtro_inv.jpg)
-
-Se puede observar que se parece a un impulso. 
-=======
-### Sine sweep
+### Sine sweep:
 
 ![Espectrograma del sine sweep](docs/m1/espectrograma_sine_sweep.jpeg)
 
 ![Convolucion del sweep con su filtro inverso](docs/m1/convolucion_sweep_filtro_inverso.jpeg)
->>>>>>> b5baa2fd5c76bca3fbdb67b32aabf51930c9d600
 
+### Prueba real de reproducción y grabación
+
+Se realizó una prueba de adquisición de audio utilizando los servicios `generate_sine_sweep_pair()` y `play_and_record()` implementados en M1.
+
+**Configuración de la prueba:**
+
+- Señal reproducida: sine sweep logarítmico de 100 Hz a 5000 Hz.
+- Frecuencia de muestreo: 44100 Hz.
+- Duración del sweep: 3 segundos.
+- Duración total de grabación: 5 segundos.
+- Silencio inicial: 0,5 segundos.
+- Dispositivo de reproducción: [Main Left/Right (MiniFuse 4)].
+- Dispositivo de grabación: [Mic/Line/Inst 1-2 (MiniFuse 4)].
+
+**Resultado:** [describir qué se escuchó y si la señal fue captada correctamente].
+
+![Grabación real del sine sweep](docs/m1/grabacion_real.png)
+
+[Archivo WAV de la grabación](docs/m1/grabacion_real_m1.wav)
 
 ## Tests
 
