@@ -145,7 +145,11 @@ rir-api/
 │   └── m1/                       
 │        ├── espectro_ruido_rosa.png
 │        ├── espectrograma_sine_sweep.png
-│        └── convolucion_sweep_filtro_inverso.png
+│        ├── convolucion_sweep_filtro_inverso.png
+│        ├── prueba_grabacion.py
+│        ├── grafica_grabacion.py
+│        ├── grabacion_real_m1.wav
+│        └── grabacion_real.png
 ├── .github/workflows/ci.yml       # CI: ruff + pytest en cada push/PR
 ├── .gitignore
 ├── pyproject.toml                 # Dependencias y configuracion (ruff, pytest)
