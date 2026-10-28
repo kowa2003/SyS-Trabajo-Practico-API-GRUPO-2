@@ -35,7 +35,7 @@ ISO 3382-1.
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone [https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git](https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git)
+   git clone https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2.git
    cd SyS-Trabajo-Practico-API-GRUPO-2
    ```
 
@@ -95,11 +95,16 @@ Todo mensaje de commit debe seguir el siguiente formato:
 #### Ejemplo de uso por consola
 
 ```bash
-git add app/services/pink_noise.py
-git commit -m "feat(services): implementar generación de ruido rosa"
-git push origin develop
-```
+git switch develop
+git pull origin develop
+git switch -c feature/pink-noise
 
+# Después de implementar la funcionalidad
+git add app/services/pink_noise.py
+git commit -m "feat(services): implementar generacion de ruido rosa"
+git push -u origin feature/pink-noise
+```
+Después del push, abrir un Pull Request desde `feature/pink-noise` hacia `develop`.
 ## Estructura del proyecto
 
 ```
@@ -112,8 +117,11 @@ rir-api/
 │   │   ├── __init__.py
 │   │   ├── health.py              # GET /health (M0)
 │   │   └── audio_http.py          # wav_response y uploaded_file (ya resueltas)
+│   │   └── signals.py             # Endpoints de generación (M1)
 │   ├── schemas/
 │   │   └── __init__.py            # Modelos Pydantic de request/response (desde M1)
+│   │   └── responses.py
+│   │   └── signals.py             # Modelos de entrada (M1)
 │   └── services/
 │       ├── __init__.py
 │       ├── pink_noise.py          # generate_pink_noise (M1)
@@ -134,6 +142,10 @@ rir-api/
 ├── data/                          # Mediciones y audios locales (ignorado por git)
 ├── docs/
 │   └── README.md                  # Guia para la documentacion (graficas de validacion, etc.)
+│   └── m1/                       
+│        ├── espectro_ruido_rosa.png
+│        ├── espectrograma_sine_sweep.png
+│        └── convolucion_sweep_filtro_inverso.png
 ├── .github/workflows/ci.yml       # CI: ruff + pytest en cada push/PR
 ├── .gitignore
 ├── pyproject.toml                 # Dependencias y configuracion (ruff, pytest)
@@ -148,22 +160,22 @@ Cada milestone expone lo que construye: los routers y schemas de `signals` se ag
 
 ```mermaid
 flowchart TB
-    %% Definición de colores principales
+    %% Colores originales
     classDef m0 stroke:#3b82f6,stroke-width:3px
     classDef m1 stroke:#a855f7,stroke-width:3px
     classDef m2 stroke:#22c55e,stroke-width:3px
     classDef m3 stroke:#f97316,stroke-width:3px
-    
-    subgraph Leyenda["<b>Leyenda de Colores (Hitos)</b>"]
+
+    subgraph Leyenda["Leyenda de Colores (Hitos)"]
         direction LR
         Leg0["M0: El plano"]:::m0 ~~~ Leg1["M1: Generación"]:::m1 ~~~ Leg2["M2: Procesamiento"]:::m2 ~~~ Leg3["M3: Producto final"]:::m3
     end
 
     C["<b>Cliente</b><br/>Swagger · frontend · script"]:::m0
-    
+
     subgraph API["RIR-API (FastAPI)"]
         direction TB
-        
+
         subgraph R["<b>Routers</b> (app/routers/)"]
             RH["health.py<br/>GET /health"]:::m0
             RAudio["audio_http.py<br/>wav_response<br/>uploaded_file"]:::m0
@@ -172,13 +184,13 @@ flowchart TB
             RUtils["utils.py<br/>POST /utils/smoothing<br/>POST /utils/schroeder<br/>POST /utils/lundeby"]:::m3
             RAcoustics["acoustics.py<br/>POST /acoustics/parameters"]:::m3
         end
-        
+
         subgraph SC["<b>Schemas</b> (app/schemas/)"]
             SResponses["<b>responses.py</b><br/><span style='color:#3b82f6'>HealthResponse</span><br/><span style='color:#22c55e'>BandAnalysisResponse</span>"]
             SSignals["<b>signals.py</b><br/><span style='color:#a855f7'>PinkNoiseRequest</span><br/><span style='color:#a855f7'>SineSweepRequest</span><br/><span style='color:#22c55e'>SyntheticIRRequest</span>"]
             SUtils["utils.py<br/>SmoothingRequest<br/>SchroederResponse<br/>LundebyResponse"]:::m3
         end
-        
+
         subgraph SV["<b>Services</b> (app/services/)"]
             PN["pink_noise.py<br/>generate_pink_noise"]:::m1
             SW["sine_sweep.py<br/>generate_sine_sweep_pair"]:::m1
@@ -188,60 +200,96 @@ flowchart TB
             AP["acoustic_parameters.py<br/>apply_smoothing<br/>apply_schroeder_integral<br/>linear_regression<br/>calculate_parameters_from_ir<br/>apply_lundeby"]:::m3
         end
     end
-    
+
     subgraph L["<b>Librerías</b>"]
         direction LR
         L_FA["FastAPI"]:::m0 ~~~ L_PY["Pydantic"]:::m0 ~~~ L_NP["NumPy"]:::m1 ~~~ L_SP["SciPy"]:::m1 ~~~ L_SD["sounddevice"]:::m1 ~~~ L_SF["soundfile"]:::m1
     end
 
-    %% Conexiones y flujo de datos
-    C -->|"request HTTP + JSON"| RSignals
-    C --> RFilters
-    C --> RUtils
-    C --> RAcoustics
+    %% Entradas del cliente
+    C -->|"HTTP + JSON"| RSignals
+    C -->|"HTTP + JSON"| RUtils
+    C -->|"HTTP + WAV"| RFilters
+    C -->|"HTTP + WAV"| RAcoustics
     C --> RH
-    
+
+    %% Validaciones y llamadas a servicios
     RSignals -->|"valida con"| SSignals
-    RFilters --> SResponses
-    RUtils --> SUtils
-    
     RSignals -->|"llama a"| PN
     RSignals -->|"llama a"| SW
     RSignals -->|"llama a"| SU
-    
-    RFilters --> SF
-    RUtils --> AP
-    RAcoustics --> AP
-    
-    %% Los servicios usan las librerías
-    PN --> L
-    SW --> L
-    IO --> L
-    SU --> L
-    SF --> L
-    AP --> L
+
+    RFilters -->|"llama a"| SF
+
+    RUtils -->|"valida con"| SUtils
+    RUtils -->|"llama a"| AP
+
+    %% Análisis acústico: conexiones faltantes
+    RAcoustics -->|"load_audio"| SU
+    RAcoustics -->|"filter_single_band"| SF
+    RAcoustics -->|"calcula parámetros"| AP
+    RAcoustics -->|"BandAnalysisResponse"| SResponses
+
+    %% Respuestas al cliente
+    RH -->|"JSON"| C
+    RUtils -->|"JSON"| C
+    RAcoustics -->|"JSON"| C
+
+    RSignals -->|"WAV"| RAudio
+    RFilters -->|"WAV"| RAudio
+    RAudio -->|"WAV al cliente"| C
+
+    %% Dependencias de librerías
+    RSignals -.-> L_FA
+    SSignals -.-> L_PY
+    SResponses -.-> L_PY
+    SUtils -.-> L_PY
+
+    PN --> L_NP
+    SW --> L_NP
+    SW --> L_SP
+    IO --> L_SD
+    SU --> L_NP
+    SF --> L_SP
+    AP --> L_NP
+    RAudio --> L_SF
 ```
 ## Branching Strategy
 
-Para el desarrollo de la API, el equipo utilizará una estrategia basada en **Feature Branches** combinada con **Pull Requests**, asegurando que el código principal siempre sea estable y funcional. 
+El equipo utiliza Feature Branches y Pull Requests,
+con una rama de integración antes de cada entrega.
 
-Las reglas del flujo de trabajo son las siguientes:
+### Rama principal (`main`)
+Contiene las versiones estables y entregables del proyecto.
+No se permiten pushes directos. Los cambios ingresan
+mediante Pull Requests revisados y con CI aprobado.
 
-### 1. Rama Principal (`main`)
-Es la rama base del proyecto. El código aquí siempre debe funcionar y pasar todos los tests.
-> **Regla estricta:** Ningún integrante del equipo puede hacer un `git push` directo a `main`.
+### Rama de integración (`develop`)
+Reúne las funcionalidades desarrolladas por el equipo.
+Se utiliza para ejecutar pruebas de integración antes
+de incorporar los cambios a `main`.
 
-### 2. Ramas de Desarrollo (Feature Branches)
-Para cada tarea nueva (issue, señal, endpoint), el desarrollador responsable debe crear una rama aislada a partir de `main`.
-* **Nomenclatura:** Se usará el prefijo `feature/` seguido del nombre de la tarea.
-* **Ejemplos:** `feature/ruido-rosa`, `feature/sine-sweep`.
+### Ramas de trabajo
+Cada tarea o issue se desarrolla en una rama independiente,
+creada preferentemente desde `develop`.
 
-### 3. Integración mediante Pull Requests (PR)
-Una vez terminada la tarea en la rama local, se sube a GitHub y se abre un Pull Request hacia `main`. 
+Convenciones de nombres:
+- `feature/nombre`: nuevas funcionalidades.
+- `fix/nombre`: correcciones de errores.
+- `docs/nombre`: documentación.
+- `test/nombre`: pruebas automatizadas.
 
-Para que el PR sea aprobado e integrado (*Merge*), debe cumplir dos condiciones obligatorias:
-* **Aprobación de Integración Continua (CI):** GitHub Actions debe dar luz verde confirmando que el linter (`Ruff`) y los tests (`Pytest`) pasaron exitosamente.
-* **Code Review:** Al menos un compañero del equipo (preferentemente con el rol de *Reviewer*) debe revisar el código y aprobar el PR.
+### Flujo de trabajo
+1. Crear una rama desde `develop`.
+2. Implementar los cambios y realizar commits descriptivos.
+3. Abrir un Pull Request hacia `develop`.
+4. Verificar Ruff, Pytest y la revisión de un compañero.
+5. Integrar los cambios en `develop`.
+6. Para cada entrega, abrir un PR de `develop` hacia `main`.
+7. Una vez aprobado, realizar el merge y crear el tag
+   correspondiente al milestone.
+
+Se utiliza la convención Conventional Commits.
 
 ## Ejemplos de uso con curl
 
@@ -262,7 +310,7 @@ curl -X POST http://localhost:8000/api/v1/signals/pink-noise \
 ```bash
 curl -X POST http://localhost:8000/api/v1/signals/sine-sweep \
   -H "Content-Type: application/json" \
-  -d '{"duration": 3, "f1": 20, "f2": 20000, "sample_rate": 44100, "inverse": false}' \
+  -d '{"duration": 3, "start_freq": 20, "end_freq": 20000, "sample_rate": 44100, "inverse": false}' \
   -o sine_sweep.wav
 ```
 
@@ -296,12 +344,12 @@ el archivo como `inverse_filter.wav`.
 
 ### M1 · Generacion de senales (`v0.1.0`)
 
-- [ ] `generate_pink_noise()` en `app/services/pink_noise.py` (Voss-McCartney recomendado).
-- [ ] `generate_sine_sweep_pair()` (sweep + filtro inverso) en `app/services/sine_sweep.py`.
-- [ ] `play_and_record()` en `app/services/audio_io.py`.
-- [ ] Endpoints `POST /api/v1/signals/pink-noise` y `POST /api/v1/signals/sine-sweep` (devuelven WAV),
+- [x] `generate_pink_noise()` en `app/services/pink_noise.py` (Voss-McCartney recomendado).
+- [x] `generate_sine_sweep_pair()` (sweep + filtro inverso) en `app/services/sine_sweep.py`.
+- [x] `play_and_record()` en `app/services/audio_io.py`.
+- [x] Endpoints `POST /api/v1/signals/pink-noise` y `POST /api/v1/signals/sine-sweep` (devuelven WAV),
       con sus schemas en `app/schemas/signals.py`.
-- [ ] Tests de `tests/test_generacion.py` y los de M1 en `tests/test_api.py` pasando;
+- [x] Tests de `tests/test_generacion.py` y los de M1 en `tests/test_api.py` pasando;
       graficas de validacion en `docs/m1/`.
 
 ### M2 · Procesamiento de la RI (`v0.2.0`)
@@ -331,10 +379,18 @@ el archivo como `inverse_filter.wav`.
 Pendiente medida: aprox. -25 dB (100 Hz), -35 dB (1 kHz) y -45 dB (10 kHz),
 es decir, unos -10 dB/decada (≈ -3 dB/octava).
 
+<<<<<<< HEAD
 ### Convolución sweep*inverso
 ![Convolución del sinesweep con el filtro inverso](docs/m1/convolucion_sinesweep_con_filtro_inv.jpg)
 
 Se puede observar que se parece a un impulso. 
+=======
+### Sine sweep
+
+![Espectrograma del sine sweep](docs/m1/espectrograma_sine_sweep.jpeg)
+
+![Convolucion del sweep con su filtro inverso](docs/m1/convolucion_sweep_filtro_inverso.jpeg)
+>>>>>>> b5baa2fd5c76bca3fbdb67b32aabf51930c9d600
 
 
 ## Tests
