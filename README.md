@@ -390,23 +390,35 @@ es decir, unos -10 dB/decada (≈ -3 dB/octava).
 
 ### Prueba real de reproducción y grabación
 
-Se realizó una prueba de adquisición de audio utilizando los servicios `generate_sine_sweep_pair()` y `play_and_record()` implementados en M1.
+Se realizó una prueba utilizando los servicios
+`generate_sine_sweep_pair()` y `play_and_record()`.
 
-**Configuración de la prueba:**
+**Configuración:**
 
-- Señal reproducida: sine sweep logarítmico de 100 Hz a 5000 Hz.
+- Señal: sine sweep logarítmico de 100 Hz a 5000 Hz.
 - Frecuencia de muestreo: 44100 Hz.
 - Duración del sweep: 3 segundos.
 - Duración total de grabación: 5 segundos.
 - Silencio inicial: 0,5 segundos.
-- Dispositivo de reproducción: [Main Left/Right (MiniFuse 4)].
-- Dispositivo de grabación: [Mic/Line/Inst 1-2 (MiniFuse 4)].
+- Silencio posterior: 1,5 segundos.
+- Factor de amplitud aplicado al sweep: 0,2.
+- Dispositivo de reproducción: Main Left/Right (MiniFuse 4).
+- Dispositivo de grabación: Mic/Line/Inst 1-2 (MiniFuse 4).
+- Canales de reproducción: 1 (mono).
+- Canales de grabación: 1 (mono).
+- Buffer: `sd.default.blocksize = 0`
+  (tamaño de bloque automático, elegido por PortAudio).
 
-**Resultado:** [describir qué se escuchó y si la señal fue captada correctamente].
+**Resultado:**
+
+La ejecución finalizó y generó un archivo WAV con 220500 muestras
+y un canal, correspondiente a 5 segundos de grabación a 44100 Hz.
 
 ![Grabación real del sine sweep](docs/m1/grabacion_real.png)
 
 [Archivo WAV de la grabación](docs/m1/grabacion_real_m1.wav)
+
+[Configuración y resultados de la prueba](docs/m1/configuracion_grabacion_m1.txt)
 
 ## Tests
 

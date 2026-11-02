@@ -1,0 +1,18 @@
+Prueba real M1
+Entrada: Mic/Line/Inst 1-2 (MiniFuse 4)
+Salida: Main Left/Right (MiniFuse 4)
+Canales de entrada: 1
+Canales de salida: 1
+Frecuencia de muestreo: 44100 Hz
+Buffer configurado: 0 (automático, elegido por PortAudio)
+Sweep: 100 Hz a 5000 Hz
+Duración del sweep: 3.0 s
+Duración de grabación: 5.0 s
+Factor de amplitud: 0.2
+Silencio inicial: 0.5 s, agregado por play_and_record
+Silencio posterior: 1.5 s
+
+Forma: (220500, 1)
+Duración obtenida: 5.000 s
+Amplitud máxima: 0.009918
+Observación de escucha: completar después de escuchar el WAV.
