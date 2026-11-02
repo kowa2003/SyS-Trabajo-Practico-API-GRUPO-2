@@ -384,7 +384,7 @@ es decir, unos -10 dB/decada (≈ -3 dB/octava).
 
 ### Sine sweep:
 
-![Espectrograma del sine sweep](docs/m1/espectrograma_sine_sweep.jpeg)
+![Respuesta en frecuencia del sweep, convolución y filtro inverso](docs/m1/resp_en_freq.jpeg)
 
 ![Convolucion del sweep con su filtro inverso](docs/m1/convolucion_sweep_filtro_inverso.jpeg)
 
