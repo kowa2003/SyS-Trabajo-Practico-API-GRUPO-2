@@ -6,37 +6,48 @@ Milestone 2: Procesamiento de la respuesta al impulso.
 from pathlib import Path
 
 import numpy as np
+import soundfile as sf
 
 
 def load_audio(path: str | Path) -> tuple[np.ndarray, int]:
-    """Carga un archivo de audio (al menos WAV y FLAC) y retorna senal y fs.
+    """Carga un archivo WAV o FLAC y devuelve la señal mono y su frecuencia.
 
-    La senal se devuelve **mono**: si el archivo es estereo (o multicanal) se
-    promedian los canales. Se convierte a ``float64`` normalizada entre -1 y 1
-    independientemente de la profundidad de bits original (16, 24 o 32 bits).
-    Usar ``soundfile`` (o ``scipy.io.wavfile``).
+    Devuelve un arreglo 1D de tipo float64. Si el archivo tiene varios
+    canales, los promedia para obtener mono. Conserva el nivel del audio,
+    sin normalizarlo respecto de su amplitud máxima.
 
     Parameters
     ----------
     path : str | Path
-        Ruta al archivo de audio a cargar.
+        Ruta del archivo de audio.
 
     Returns
     -------
-    signal : np.ndarray
-        Senal de audio mono como array 1D ``float64`` en [-1, 1].
-    fs : int
-        Frecuencia de muestreo del archivo en Hz.
+    tuple[np.ndarray, int]
+        Señal mono y frecuencia de muestreo en Hz.
 
     Raises
     ------
     FileNotFoundError
-        Si el archivo especificado no existe.
+        Si el archivo no existe.
     ValueError
-        Si el archivo no es un audio valido o el formato no es soportado
-        (con un mensaje claro que indique el archivo y el motivo).
+        Si el archivo no puede leerse como audio.
     """
-    raise NotImplementedError("Implementar en Milestone 2")
+    ruta = Path(path)
+
+    if not ruta.exists():
+        raise FileNotFoundError(f"No existe el archivo: {ruta}")
+
+    try:
+        signal, fs = sf.read(ruta, dtype="float64")
+    except sf.LibsndfileError as error:
+        raise ValueError(f"No se pudo leer el archivo de audio '{ruta}': {error}") from error
+
+    # En audio multicanal, cada columna corresponde a un canal.
+    if signal.ndim == 2:
+        signal = signal.mean(axis=1)
+
+    return signal, fs
 
 
 def generate_synthetic_ir(duration: float, t60_values: dict[float, float], fs: int) -> np.ndarray:
