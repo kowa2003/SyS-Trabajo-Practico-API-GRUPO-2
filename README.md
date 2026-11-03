@@ -375,7 +375,7 @@ el archivo como `inverse_filter.wav`.
 - [ ] Seccion "Validacion" en este README, `AI_LOG.md` y presentacion oral.
 - [ ] (Opcional) `apply_lundeby()`.
 
-## Validacion M1 - Procesamiento de Señales
+## Validacion M1
 
 ### Ruido rosa:
 
