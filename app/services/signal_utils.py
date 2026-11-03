@@ -7,6 +7,7 @@ from pathlib import Path
 
 import numpy as np
 import soundfile as sf
+from scipy.signal import fftconvolve
 
 
 def load_audio(path: str | Path) -> tuple[np.ndarray, int]:
@@ -94,7 +95,31 @@ def get_impulse_response(recording: np.ndarray, inverse_filter: np.ndarray) -> n
     np.ndarray
         Respuesta al impulso estimada, normalizada.
     """
-    raise NotImplementedError("Implementar en Milestone 2")
+    # 1. Validar las senales de entrada.
+    if recording.ndim != 1 or inverse_filter.ndim != 1:
+        raise ValueError("Las senales deben tener una dimension.")
+
+    if recording.size == 0 or inverse_filter.size == 0:
+        raise ValueError("Las senales no pueden estar vacias.")
+
+    # 2. Convolucion completa utilizando FFT.
+    ir_full = fftconvolve(recording, inverse_filter, mode="full")
+
+    # 3. Encontrar el pico del sonido directo.
+    peak_idx = int(np.argmax(np.abs(ir_full)))
+
+    # 4. Conservar 240 muestras antes del pico (~5 ms a 48 kHz).
+    pre_samples = 240
+    start_idx = max(0, peak_idx - pre_samples)
+    ir = ir_full[start_idx:]
+
+    # 5. Normalizar respecto de la amplitud maxima.
+    peak_amplitude = np.max(np.abs(ir))
+
+    if not np.isfinite(peak_amplitude) or peak_amplitude == 0:
+        raise ValueError("No se puede normalizar una senal sin pico valido.")
+
+    return ir / peak_amplitude
 
 
 def logarithmic_scale_conversion(signal: np.ndarray) -> np.ndarray:
