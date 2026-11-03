@@ -375,18 +375,26 @@ el archivo como `inverse_filter.wav`.
 - [ ] Seccion "Validacion" en este README, `AI_LOG.md` y presentacion oral.
 - [ ] (Opcional) `apply_lundeby()`.
 
-## Validacion M1
+## Validacion M1 - Procesamiento de Señales
+
 ### Ruido rosa:
+
 ![Espectro del ruido rosa](docs/m1/espectro_ruido_rosa.png)
 
 Pendiente medida: aprox. -25 dB (100 Hz), -35 dB (1 kHz) y -45 dB (10 kHz),
 es decir, unos -10 dB/decada (≈ -3 dB/octava).
 
-### Sine sweep:
+### Respuesta en frecuencia del sweep, convolución y filtro inverso:
 
 ![Respuesta en frecuencia del sweep, convolución y filtro inverso](docs/m1/resp_en_freq.jpeg)
 
+### Convolucion del sweep con su filtro inverso:
+
 ![Convolucion del sweep con su filtro inverso](docs/m1/convolucion_sweep_filtro_inverso.jpeg)
+
+### Espectograma del sine sweep:
+
+![Espectograma Sine Sweep](docs/m1/espectrograma_sine_sweep.png)
 
 ### Prueba real de reproducción y grabación
 
