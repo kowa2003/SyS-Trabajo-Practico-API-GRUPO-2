@@ -9,6 +9,8 @@ import numpy as np
 import soundfile as sf
 from scipy.signal import fftconvolve
 
+from app.services.filter import filter_single_band
+
 
 def load_audio(path: str | Path) -> tuple[np.ndarray, int]:
     """Carga un archivo WAV o FLAC y devuelve la señal mono y su frecuencia.
@@ -73,7 +75,53 @@ def generate_synthetic_ir(duration: float, t60_values: dict[float, float], fs: i
     np.ndarray
         Respuesta al impulso sintetizada (array 1D de ``int(duration * fs)`` muestras).
     """
-    raise NotImplementedError("Implementar en Milestone 2")
+    if not t60_values:
+        raise ValueError("Debe indicarse al menos una banda.")
+
+    n_samples = int(duration * fs)
+    if n_samples < 32:
+        raise ValueError("La duracion es demasiado corta.")
+
+    # Vector de tiempo y senal de salida.
+    t = np.arange(n_samples) / fs
+    ir = np.zeros(n_samples, dtype=np.float64)
+
+    # Semilla fija para obtener resultados reproducibles.
+    rng = np.random.default_rng(0)
+
+    for center_freq, t60 in t60_values.items():
+        if center_freq <= 0 or not np.isfinite(center_freq):
+            raise ValueError("La frecuencia central debe ser positiva y finita.")
+
+        if t60 <= 0 or not np.isfinite(t60):
+            raise ValueError("El T60 debe ser positivo y finito.")
+
+        # 1. Generar ruido blanco.
+        noise = rng.standard_normal(n_samples)
+
+        # 2. Filtrar en la banda de octava correspondiente.
+        filtered_noise = filter_single_band(noise, fs, center_freq)
+
+        # 3. Igualar la energia RMS de las distintas bandas.
+        rms = np.sqrt(np.mean(filtered_noise**2))
+        if not np.isfinite(rms) or rms == 0:
+            raise ValueError("No se pudo normalizar la banda.")
+
+        filtered_noise = filtered_noise / rms
+
+        # 4. Aplicar el decaimiento exponencial segun el T60.
+        alpha = 3 * np.log(10) / t60
+        envelope = np.exp(-alpha * t)
+
+        # 5. Acumular la contribucion de esta banda.
+        ir += filtered_noise * envelope
+
+    # 6. Normalizar la RI completa respecto del pico.
+    peak = np.max(np.abs(ir))
+    if not np.isfinite(peak) or peak == 0:
+        raise ValueError("No se pudo normalizar la RI.")
+
+    return ir / peak
 
 
 def get_impulse_response(recording: np.ndarray, inverse_filter: np.ndarray) -> np.ndarray:
