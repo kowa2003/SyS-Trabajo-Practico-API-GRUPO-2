@@ -300,7 +300,7 @@ Se utiliza la convención Conventional Commits.
 Con el servidor en ejecución, se pueden generar
 señales WAV mediante peticiones HTTP.
 
-### Generar ruido rosa
+### Generar ruido rosa (M1)
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/signals/pink-noise \
@@ -309,7 +309,7 @@ curl -X POST http://localhost:8000/api/v1/signals/pink-noise \
   -o pink_noise.wav
 ```
 
-### Generar sine sweep
+### Generar sine sweep (M1)
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/signals/sine-sweep \
@@ -322,6 +322,39 @@ Para obtener el filtro inverso, se repite la
 segunda petición con `inverse: true` y se guarda
 el archivo como `inverse_filter.wav`.
 
+### Generar respuesta al impulso sintética (M2)
+
+Genera una respuesta al impulso sintética con tiempos de
+reverberación (T60) configurables por banda de octava.
+El resultado se descarga como un archivo WAV.
+
+```bash
+curl -X POST http://localhost:8000/api/v1/signals/synthetic-ir \
+  -H "Content-Type: application/json" \
+  -d '{"duration": 3.0, "t60_values": {"125": 2.0, "500": 1.5, "1000": 1.2, "4000": 0.8}, "sample_rate": 44100}' \
+  -o synthetic_ir.wav
+```
+
+### Filtrar un WAV por banda de octava (M2)
+
+Recibe un archivo WAV, lo filtra alrededor de una frecuencia
+central y devuelve el audio filtrado.
+
+En este ejemplo se usa la RI sintética generada anteriormente,
+con un filtro de cuarto orden centrado en 1000 Hz.
+
+```bash
+curl -X POST http://localhost:8000/api/v1/filters/single-band \
+  -F "file=@synthetic_ir.wav" \
+  -F "center_freq=1000" \
+  -F "order=4" \
+  -o banda_1000hz.wav
+```
+
+El parámetro `order` es opcional y su valor predeterminado
+es 4. Si el archivo enviado no contiene audio válido, el
+endpoint devuelve HTTP 422.
+  
 ## Milestones y entregas (2C 2026)
 
 | Milestone | Entrega | Tag | Evaluacion |

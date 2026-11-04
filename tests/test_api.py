@@ -24,8 +24,6 @@ from app.routers.audio_http import wav_response
 
 client = TestClient(app)
 
-xfail_m1 = pytest.mark.xfail(strict=False, reason="se implementa en M1")
-xfail_m2 = pytest.mark.xfail(strict=False, reason="se implementa en M2")
 xfail_m3 = pytest.mark.xfail(strict=False, reason="se implementa en M3")
 
 
@@ -119,7 +117,6 @@ def test_invalid_duration_returns_422():
 # ── M2 ───────────────────────────────────────────────────────────────────────
 
 
-@xfail_m2
 def test_signals_synthetic_ir_endpoint():
     """/api/v1/signals/synthetic-ir devuelve una RI en WAV con la duracion pedida."""
     pedido = {"duration": 1.0, "t60_values": {"1000": 0.8}, "sample_rate": 44100}
