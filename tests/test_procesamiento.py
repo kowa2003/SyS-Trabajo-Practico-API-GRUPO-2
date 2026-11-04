@@ -20,10 +20,6 @@ from app.services.signal_utils import (
 )
 from app.services.sine_sweep import generate_sine_sweep_pair
 
-pytestmark = pytest.mark.xfail(
-    raises=NotImplementedError, strict=False, reason="se implementa en M2"
-)
-
 
 def _t60_desde_schroeder(ir: np.ndarray, fs: int) -> float:
     """T60 extrapolado de la pendiente de Schroeder entre -5 y -25 dB (T20)."""
@@ -53,6 +49,20 @@ class TestLoadAudio:
         assert isinstance(senal, np.ndarray)
         assert senal.ndim == 1
         assert len(senal) == fs
+
+    def test_load_audio_flac(self, tmp_path):
+        """Carga un FLAC conservando la señal y la frecuencia de muestreo."""
+        fs = 48000
+        original = 0.5 * np.sin(2 * np.pi * 1000 * np.arange(fs) / fs)
+        ruta = tmp_path / "prueba.flac"
+        sf.write(ruta, original, fs, format="FLAC", subtype="PCM_16")
+
+        senal, fs_leida = load_audio(ruta)
+
+        assert fs_leida == fs
+        assert senal.ndim == 1
+        assert senal.dtype == np.float64
+        np.testing.assert_allclose(senal, original, atol=1 / 32768)
 
     def test_load_audio_stereo_to_mono(self, tmp_path):
         """Un WAV estereo se devuelve mono (promedio de canales)."""
