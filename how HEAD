@@ -1,0 +1,35 @@
+[33mcommit 2c95144941b3fcfd2bcc6206652428b073de8d76[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Merge: 842d373 ef40676
+Author: quaglia475 <quaglia475@gmail.com>
+Date:   Fri Oct 16 10:46:22 2026 -0300
+
+    Merge branch 'main' of https://github.com/kowa2003/SyS-Trabajo-Practico-API-GRUPO-2
+
+ .github/workflows/ci.yml                           |   8 [32m+[m[31m-[m
+ rir_api/.gitignore => .gitignore                   |   0
+ README.md                                          | 126 [32m+++++++++++++++[m[31m------[m
+ {rir_api/app => app}/__init__.py                   |   0
+ {rir_api/app => app}/main.py                       |   0
+ {rir_api/app => app}/routers/__init__.py           |   0
+ {rir_api/app => app}/routers/audio_http.py         |   0
+ {rir_api/app => app}/routers/health.py             |   0
+ {rir_api/app => app}/schemas/__init__.py           |   0
+ {rir_api/app => app}/services/__init__.py          |   0
+ .../app => app}/services/acoustic_parameters.py    |   0
+ {rir_api/app => app}/services/audio_io.py          |   0
+ {rir_api/app => app}/services/filter.py            |   0
+ {rir_api/app => app}/services/pink_noise.py        |   0
+ {rir_api/app => app}/services/signal_utils.py      |   0
+ {rir_api/app => app}/services/sine_sweep.py        |   0
+ {rir_api/app => app}/settings.py                   |   0
+ {rir_api/data => data}/.gitkeep                    |   0
+ {rir_api/docs => docs}/README.md                   |   0
+ rir_api/pyproject.toml => pyproject.toml           |   0
+ {rir_api/tests => tests}/data/.gitkeep             |   0
+ {rir_api/tests => tests}/test_analisis.py          |   0
+ {rir_api/tests => tests}/test_api.py               |   0
+ {rir_api/tests => tests}/test_generacion.py        |   0
+ {rir_api/tests => tests}/test_placeholder.py       |   0
+ {rir_api/tests => tests}/test_procesamiento.py     |   0
+ rir_api/uv.lock => uv.lock                         |   0
+ 27 files changed, 96 insertions(+), 38 deletions(-)

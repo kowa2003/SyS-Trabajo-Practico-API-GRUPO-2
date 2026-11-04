@@ -170,9 +170,7 @@ def get_impulse_response(recording: np.ndarray, inverse_filter: np.ndarray) -> n
     return ir / peak_amplitude
 
 
-def logarithmic_scale_conversion(
-    signal: np.ndarray, floor_db: float = -120.0
-) -> np.ndarray:
+def logarithmic_scale_conversion(signal: np.ndarray, floor_db: float = -120.0) -> np.ndarray:
     """Convierte una señal a escala logarítmica (dB) normalizada.
 
     `L = 20 * log10(|x| / max(|x|))`. Evitar `log(0)` (usar un `eps` o
