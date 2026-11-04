@@ -170,20 +170,43 @@ def get_impulse_response(recording: np.ndarray, inverse_filter: np.ndarray) -> n
     return ir / peak_amplitude
 
 
-def logarithmic_scale_conversion(signal: np.ndarray) -> np.ndarray:
-    """Convierte una senal a escala logaritmica (dB) normalizada.
+def logarithmic_scale_conversion(
+    signal: np.ndarray, floor_db: float = -120.0
+) -> np.ndarray:
+    """Convierte una señal a escala logarítmica (dB) normalizada.
 
-    ``L = 20 * log10(|x| / max(|x|))``. Evitar ``log(0)`` (usar un ``eps`` o
+    `L = 20 * log10(|x| / max(|x|))`. Evitar `log(0)` (usar un `eps` o
     un piso, por ejemplo -120 dB).
 
     Parameters
     ----------
     signal : np.ndarray
-        Senal de entrada (valores lineales, array 1D).
+        Señal de entrada (valores lineales, array 1D).
+    floor_db : float, optional
+        Piso mínimo en dB para truncar valores extremadamente bajos o -inf.
 
     Returns
     -------
     np.ndarray
-        Senal en dB, normalizada a 0 dB en el maximo.
+        Señal en dB, normalizada a 0 dB en el máximo.
     """
-    raise NotImplementedError("Implementar en Milestone 2")
+    # 1. Magnitud absoluta
+    abs_signal = np.abs(signal)
+
+    # 2. Normalización respecto al máximo para que el pico sea 0 dB
+    max_val = np.max(abs_signal)
+    if max_val > 0:
+        abs_signal = abs_signal / max_val
+
+    # 3. Evitar log(0) con el epsilon del sistema (2.22e-16)
+    eps = np.finfo(float).eps
+    abs_signal = np.maximum(abs_signal, eps)
+
+    # 4. Conversión a dB (20 * log10 para amplitud)
+    signal_db = 20.0 * np.log10(abs_signal)
+
+    # 5. Límite inferior (piso en dB)
+    if floor_db is not None:
+        signal_db = np.maximum(signal_db, floor_db)
+
+    return signal_db
