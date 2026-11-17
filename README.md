@@ -463,9 +463,12 @@ y un canal, correspondiente a 5 segundos de grabación a 44100 Hz.
 
 ## Validación Acústica y Procesamiento Multi-banda (Milestone 2)
 
-Para la validación del pipeline del Milestone 2, se procesaron dos respuestas al impulso (RIs) de recintos reales pertenecientes al catálogo **OpenAIR**:
+Para la validación del pipeline del Milestone 2, se procesaron dos respuestas al impulso (RIs) de recintos reales pertenecientes al **MIT IR Survey** (MIT McDermott Lab):
 1. **Hallway Elementary School** (`h042_Hallway_ElementarySchool_4txts.wav`): Recinto reverberante con $T_{60}$ largo.
 2. **Livingroom** (`h045_Livingroom_4txts.wav`): Recinto pequeño y absorbente con $T_{60}$ corto.
+
+- **Página del MIT IR Survey:** https://mcdermottlab.mit.edu/Reverb/IR_Survey.html
+- **Descarga de los archivos de audio:** https://mcdermottlab.mit.edu/Reverb/IRMAudio/Audio.zip
 
 Ambas RIs fueron procesadas a través del módulo de filtrado por octava (`filter_single_band`) y conversión logarítmica (`logarithmic_scale_conversion`) en las seis frecuencias centrales normalizadas según IEC 61260 ($125, 250, 500, 1000, 2000\text{ y }4000\text{ Hz}$). Los resultados se contrastaron visual y cuantitativamente con los parámetros ISO 3882 reportados por el software de referencia comercial **REW (Room EQ Wizard)**.
 
