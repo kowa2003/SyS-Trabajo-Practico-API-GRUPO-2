@@ -513,7 +513,7 @@ Ambas RIs fueron procesadas mediante el módulo de filtrado por octava (`filter_
 Se generaron tres tipos de gráficos para cada respuesta al impulso:
 
 - **Forma de onda:** representa la amplitud de la señal en función del tiempo.
-- **Espectro de magnitud:** permite observar cómo se distribuye el contenido espectral de la RI. Se utiliza una ventana Hann y una representación de magnitud normalizada en decibeles.
+- **Espectro de magnitud:** permite observar cómo se distribuye el contenido espectral de la RI. Se calcula mediante la FFT de la señal completa, sin aplicar una ventana temporal, y se representa en decibeles a partir de una magnitud normalizada.
 - **Procesamiento multibanda:** muestra la evolución temporal de las señales filtradas en las seis bandas de octava, expresada en escala logarítmica.
 
 #### A. Hallway Elementary School (h042)
@@ -611,6 +611,29 @@ uv run pytest tests/test_procesamiento.py::test_impulse_response_peak -v
 ```
 
 La prueba verifica que el procedimiento de deconvolución permite recuperar una respuesta al impulso suficientemente similar a la original, considerando la alineación temporal.
+
+#### Validación del decaimiento de una RI sintética
+
+También se verificó que el procedimiento de generación de respuestas al impulso sintéticas produzca un decaimiento compatible con el tiempo de reverberación especificado. Esta prueba está implementada en `tests/test_procesamiento.py`, en la función `test_synthetic_ir_decay()`.
+
+El procedimiento consiste en:
+
+1. Generar una RI sintética de 6 segundos, con una frecuencia de muestreo de 44.100 Hz y un T60 esperado de 2 segundos en la banda de 1 kHz.
+2. Filtrar la señal en la banda de octava centrada en 1 kHz.
+3. Obtener la curva de decaimiento mediante el método de Schroeder.
+4. Estimar el T60 a partir de dicha curva y compararlo con el valor esperado.
+
+**Criterio de aceptación:** el T60 medido debe diferir como máximo un 10 % del valor esperado de 2 segundos, por lo que debe encontrarse entre 1,8 y 2,2 segundos.
+
+**Resultado de la ejecución:**
+
+```text
+uv run pytest tests/test_procesamiento.py::TestGenerateSyntheticIR::test_synthetic_ir_decay -v
+
+1 passed in 1.54s
+```
+
+La prueba confirma que la RI sintética presenta un decaimiento compatible con el T60 configurado, dentro de la tolerancia establecida.
 
 ### 4. Validación con la API de referencia de la cátedra
 
