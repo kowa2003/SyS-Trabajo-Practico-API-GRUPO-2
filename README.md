@@ -470,7 +470,7 @@ Para la validación del pipeline del Milestone 2, se procesaron dos respuestas a
 - **Página del MIT IR Survey:** https://mcdermottlab.mit.edu/Reverb/IR_Survey.html
 - **Descarga de los archivos de audio:** https://mcdermottlab.mit.edu/Reverb/IRMAudio/Audio.zip
 
-Ambas RIs fueron procesadas a través del módulo de filtrado por octava (`filter_single_band`) y conversión logarítmica (`logarithmic_scale_conversion`) en las seis frecuencias centrales normalizadas según IEC 61260 ($125, 250, 500, 1000, 2000\text{ y }4000\text{ Hz}$). Los resultados se contrastaron visual y cuantitativamente con los parámetros ISO 3882 reportados por el software de referencia comercial **REW (Room EQ Wizard)**.
+Ambas RIs fueron procesadas mediante el módulo de filtrado por octava (`filter_single_band`) y conversión logarítmica (`logarithmic_scale_conversion`) en las seis frecuencias centrales normalizadas según IEC 61260 ($125, 250, 500, 1000, 2000\text{ y }4000\text{ Hz}$). Se generaron representaciones temporales, espectrales y multibanda para inspeccionar las señales procesadas. Además, se incluyen mediciones obtenidas con el software de referencia **REW (Room EQ Wizard)**, basadas en parámetros acústicos de referencia de la norma ISO 3382.
 
 ---
 
@@ -510,43 +510,81 @@ Ambas RIs fueron procesadas a través del módulo de filtrado por octava (`filte
 
 ### 2. Análisis Visual y Gráficos de Validación
 
-#### A. Hallway Elementary School (Recinto Reverberante)
+Se generaron tres tipos de gráficos para cada respuesta al impulso:
 
-**Curvas de decaimiento logarítmico en 6 bandas (RIR-API)**  
+- **Forma de onda:** representa la amplitud de la señal en función del tiempo.
+- **Espectro de magnitud:** permite observar cómo se distribuye el contenido espectral de la RI. Se utiliza una ventana Hann y una representación de magnitud normalizada en decibeles.
+- **Procesamiento multibanda:** muestra la evolución temporal de las señales filtradas en las seis bandas de octava, expresada en escala logarítmica.
+
+#### A. Hallway Elementary School (h042)
+
+**Forma de onda**
+
+`docs/m2/forma_onda_h042_Hallway_ElementarySchool_4txts.png`
+
+![Forma de onda h042](docs/m2/forma_onda_h042_Hallway_ElementarySchool_4txts.png)
+
+La representación temporal permite observar la señal original y su evolución a lo largo de la duración de la respuesta al impulso.
+
+**Espectro de magnitud**
+
+`docs/m2/espectro_h042_Hallway_ElementarySchool_4txts.png`
+
+![Espectro h042](docs/m2/espectro_h042_Hallway_ElementarySchool_4txts.png)
+
+El espectro muestra la distribución de magnitud en frecuencia hasta la frecuencia de Nyquist (16 kHz). Se observa una disminución de la magnitud hacia las frecuencias altas.
+
+**Procesamiento multibanda**
+
 `docs/m2/val_multiband_h042_Hallway_ElementarySchool_4txts.png`
 
-![Validación Multi-banda RIR-API - Hallway](docs/m2/val_multiband_h042_Hallway_ElementarySchool_4txts.png)
+![Validación multibanda h042](docs/m2/val_multiband_h042_Hallway_ElementarySchool_4txts.png)
 
-* **Análisis RIR-API:** La figura muestra las curvas de decaimiento en escala logarítmica (dB) en función del tiempo para las 6 octavas filtradas. En frecuencias medias ($250\text{ Hz} - 1000\text{ Hz}$), la energía decae linealmente en dB desde $0\text{ dB}$ hasta $-60\text{ dB}$ cerca de los $2,25\text{ segundos}$. En la octava de $4000\text{ Hz}$, la pendiente es marcadamente más pronunciada debido a la absorción atmosférica y superficial de las altas frecuencias, alcanzando el piso de ruido a los $\sim 1,15\text{ segundos}$.
+El gráfico permite comparar la evolución temporal de las señales filtradas en las seis bandas centrales. Las diferencias entre las trazas permiten inspeccionar el comportamiento de la respuesta al impulso según la frecuencia.
 
----
+**Referencia externa REW**
 
-**Respuesta en frecuencia de T20 y T30 (REW)**  
 `docs/m2/Hallway_ElementarySc_RT60_REW.png`
 
-![Análisis RT60 REW - Hallway](docs/m2/Hallway_ElementarySc_RT60_REW.png)
+![Análisis RT60 REW h042](docs/m2/Hallway_ElementarySc_RT60_REW.png)
 
-* **Análisis REW:** El gráfico de referencia comercial muestra la meseta característica de recintos grandes: el tiempo de reverberación se mantiene elevado y plano entre $250\text{ Hz}$ y $1000\text{ Hz}$ ($T_{30} \approx 2,25\text{ s}$ - $2,27\text{ s}$), decayendo suavemente en $2000\text{ Hz}$ ($1,95\text{ s}$) y fuertemente en $4000\text{ Hz}$ ($1,15\text{ s}$). La tasa de caída en dB obtenida por nuestra función en Python se amolda perfectamente a la respuesta espectral reportada por REW.
+El gráfico presenta los valores de T20 y T30 obtenidos mediante REW. Se conserva como referencia externa para futuras comparaciones.
 
 ---
 
-#### B. Livingroom (Recinto Absorbente)
+#### B. Livingroom (h045)
 
-**Curvas de decaimiento logarítmico en 6 bandas (RIR-API)**  
+**Forma de onda**
+
+`docs/m2/forma_onda_h045_Livingroom_4txts.png`
+
+![Forma de onda h045](docs/m2/forma_onda_h045_Livingroom_4txts.png)
+
+La representación temporal permite observar la señal original y su evolución a lo largo de la duración de la respuesta al impulso.
+
+**Espectro de magnitud**
+
+`docs/m2/espectro_h045_Livingroom_4txts.png`
+
+![Espectro h045](docs/m2/espectro_h045_Livingroom_4txts.png)
+
+El espectro muestra la distribución de magnitud en frecuencia hasta la frecuencia de Nyquist (16 kHz). Se observa una disminución de la magnitud hacia las frecuencias altas.
+
+**Procesamiento multibanda**
+
 `docs/m2/val_multiband_h045_Livingroom_4txts.png`
 
-![Validación Multi-banda RIR-API - Livingroom](docs/m2/val_multiband_h045_Livingroom_4txts.png)
+![Validación multibanda h045](docs/m2/val_multiband_h045_Livingroom_4txts.png)
 
-* **Análisis RIR-API:** En esta sala de menor volumen, el decaimiento de la energía es significativamente más veloz. La escala en dB evidencia la caída completa hacia el piso de ruido ($\sim -80\text{ dB}$) en aproximadamente $0,6\text{ segundos}$ para las frecuencias centrales ($500\text{ Hz} - 2000\text{ Hz}$), y aun más rápido en $125\text{ Hz}$ ($\sim 0,4\text{ s}$). La señal filtrada conserva la resolución temporal adecuada sin distorsión de fase previa gracias al filtrado `sosfiltfilt`.
+El gráfico permite comparar la evolución temporal de las señales filtradas en las seis bandas centrales. Se pueden observar las diferencias de comportamiento entre las bandas de frecuencia.
 
----
+**Referencia externa REW**
 
-**Respuesta en frecuencia de T20 y T30 (REW)**  
 `docs/m2/h045_Livingroom_4txts_RT60_REW.png`
 
-![Análisis RT60 REW - Livingroom](docs/m2/h045_Livingroom_4txts_RT60_REW.png)
+![Análisis RT60 REW h045](docs/m2/h045_Livingroom_4txts_RT60_REW.png)
 
-* **Análisis REW:** La curva de REW confirma un perfil acústico típico de habitación residencial: un tiempo de reverberación muy bajo en graves ($125\text{ Hz} \to T_{30} = 0,403\text{ s}$), que asciende ligeramente y se estabiliza alrededor de $0,60\text{ s} - 0,65\text{ s}$ entre $500\text{ Hz}$ y $2000\text{ Hz}$. La velocidad de decaimiento observada en las trazas de nuestro procesador confirma un ajuste preciso en todas las bandas de frecuencia evaluadas.
+El gráfico presenta los valores de T20 y T30 obtenidos mediante REW. Se conserva como referencia externa para futuras comparaciones.
 
 ---
 
