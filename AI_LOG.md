@@ -29,3 +29,43 @@
   * Texto explicativo estructurado enlazando secuencialmente cada figura y tabla resumen comparativa entre la API y el software comercial.
 * **Evaluación y aprendizaje:**
   * Facilitó el volcado directo de los resultados de validación requeridos en la rúbrica del README sin necesidad de redactar informes en PDF externos.
+
+
+## Milestone 3 — Organización y planificación del desarrollo
+
+### Información de la interacción
+
+- **Fecha:** 16 de noviembre de 2026.
+- **Herramienta utilizada:** ChatGPT (OpenAI).
+- **Milestone:** M3 — Producto final.
+- **Objetivo:** Revisión y organización de las issues de desarrollo.
+
+### Uso de inteligencia artificial
+
+Se utilizó ChatGPT como herramienta de asistencia para revisar la organización de las tareas correspondientes a M3 y mejorar la documentación de las issues del repositorio.
+
+Se buscó agrupar cada servicio de procesamiento con su endpoint, schema y tests asociados, evitando dividir una misma funcionalidad en múltiples tareas independientes.
+
+### Ejemplo de consulta realizada
+
+> "Me gustaría crear issues donde las funciones y sus endpoints estén en lo mismo, explicando qué se hizo y sus criterios de aceptación. Dividilo entonces en una issue con función + sus endpoints."
+
+### Resultado obtenido
+
+La herramienta propuso reorganizar las siguientes issues:
+
+- **#9 — Suavizado:** `apply_smoothing` junto al endpoint `/utils/smoothing`.
+- **#10 — Integral de Schroeder:** `apply_schroeder_integral` junto al endpoint `/utils/schroeder`.
+- **#11 — Parámetros acústicos:** `linear_regression`, `calculate_parameters_from_ir` y el endpoint `/acoustics/parameters`.
+
+También se identificó la necesidad de mantener separada la implementación opcional de Lundeby (#50) y de documentar la validación final (#51).
+
+Para cada issue se generó una descripción de las tareas de implementación y una lista de criterios de aceptación relacionados con el funcionamiento de los servicios, los schemas, los endpoints y los tests automatizados.
+
+### Verificación y evaluación
+
+Las propuestas se contrastaron con la especificación oficial de M3 y con las funciones y tests existentes en el repositorio.
+
+La herramienta se utilizó para organizar y redactar documentación, no para implementar o ejecutar las funcionalidades.
+
+La aceptación definitiva de los cambios, su implementación y la comprobación de los tests quedan a cargo de los integrantes del grupo.
