@@ -96,7 +96,40 @@ def apply_schroeder_integral(ir: np.ndarray) -> np.ndarray:
     .. [1] Schroeder, M. R. (1965). "New method of measuring reverberation
        time." JASA 37(3), 409-412.
     """
-    raise NotImplementedError("Implementar en Milestone 3")
+    # 1. Eleva al cuadrado cada muestra de la respuesta al impulso (h^2).
+    # Esto transforma la amplitud instantánea en energía instantánea.
+    ir_sq = ir**2
+
+    # 2. Acumula la energía de atrás hacia adelante (integración inversa):
+    # - ir_sq[::-1] da vuelta el array (empieza desde el final).
+    # - np.cumsum() suma de manera acumulativa hacia adelante.
+    # - El último [::-1] vuelve a dar vuelta el resultado al orden temporal original.
+    e_t = np.cumsum(ir_sq[::-1])[::-1]
+
+    # 3. Obtiene la energía total inicial (E[0], que corresponde al primer elemento).
+    e_0 = e_t[0]
+
+    # 4. Obtiene el 'eps' (el número flotante positivo más pequeño del sistema)
+    # para usarlo como protección matemática contra ceros.
+    eps = np.finfo(float).eps
+    if e_0 <= 0:
+        e_0 = max(e_0, eps)
+
+    # 5. Evita divisiones o logaritmos de cero reemplazando valores nulos por 'eps'.
+    e_t = np.maximum(e_t, eps)
+
+    # 6. Calcula el cociente entre la energía restante y la energía total inicial: E[n] / E[0].
+    ratio = e_t / e_0
+
+    # 7. Convierte el resultado a decibelios utilizando 10 * log10 (porque se trata de energía).
+    edc_db = 10.0 * np.log10(ratio)
+
+    # 8. Trunca los valores extremadamente negativos (por ejemplo, fijando un piso en -150 dB)
+    # para evitar que la cola de la señal genere '-inf' o 'NaN', lo cual rompería la respuesta JSON.
+    edc_db = np.maximum(edc_db, -150.0)
+
+    # 9. Devuelve el vector EDC completo en dB, arrancando en 0 dB y de la misma longitud que la RI.
+    return edc_db
 
 
 def linear_regression(x: np.ndarray, y: np.ndarray) -> tuple[float, float, float]:

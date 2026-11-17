@@ -5,8 +5,8 @@ from typing import Annotated
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app.routers.audio_http import uploaded_file
-from app.schemas.utils import SmoothingMethod, SmoothingResponse
-from app.services.acoustic_parameters import apply_smoothing
+from app.schemas.utils import SchroederResponse, SmoothingMethod, SmoothingResponse
+from app.services.acoustic_parameters import apply_schroeder_integral, apply_smoothing
 from app.services.signal_utils import load_audio
 
 router = APIRouter()
@@ -46,4 +46,32 @@ async def smoothing(
         sample_rate=fs,
         time_step=paso / fs,
         envelope=envelope_reducida.tolist(),
+    )
+
+
+@router.post("/schroeder", response_model=SchroederResponse)
+async def schroeder(
+    file: Annotated[UploadFile, File(...)],
+) -> SchroederResponse:
+    with uploaded_file(file) as path:
+        try:
+            signal, fs = load_audio(path)
+        except Exception as exc:
+            raise HTTPException(
+                status_code=422, detail=f"Archivo de audio inválido: {exc}"
+            ) from exc
+
+    num_samples = len(signal)
+    edc = apply_schroeder_integral(signal)
+
+    paso = max(1, round(fs / 1000))
+    decimated_edc = edc[::paso].tolist()
+    time_step = paso / fs
+
+    return SchroederResponse(
+        sample_rate=fs,
+        num_samples=num_samples,
+        lundeby_applied=False,
+        time_step=time_step,
+        edc_db=decimated_edc,
     )
