@@ -8,7 +8,7 @@ Uso:
 
 from fastapi import FastAPI
 
-from app.routers import filters, health, signals, utils
+from app.routers import acoustics, filters, health, signals, utils
 from app.settings import settings
 
 app = FastAPI(
@@ -31,8 +31,7 @@ app.include_router(
     prefix="/api/v1/utils",
     tags=["utils"],
 )
-# app.include_router(acoustics.router, prefix="/api/v1/acoustics", tags=["acoustics"])
-# app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
+app.include_router(acoustics.router, prefix="/api/v1/acoustics", tags=["acoustics"])
 
 
 @app.get("/")
