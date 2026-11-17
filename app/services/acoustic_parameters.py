@@ -4,6 +4,8 @@ Milestone 3: Producto final.
 """
 
 import numpy as np
+from scipy.ndimage import uniform_filter1d
+from scipy.signal import hilbert
 
 
 def apply_smoothing(
@@ -41,7 +43,35 @@ def apply_smoothing(
         Si ``method`` no es ``'hilbert'`` ni ``'moving_average'``, o si
         ``window_ms`` no es positivo.
     """
-    raise NotImplementedError("Implementar en Milestone 3")
+
+    # Convertir la señal a un arreglo NumPy de precisión doble.
+    x = np.asarray(signal, dtype=np.float64)
+
+    # Validar las entradas.
+    if x.ndim != 1 or x.size == 0 or not np.all(np.isfinite(x)):
+        raise ValueError("La señal debe ser un array 1D no vacío y con valores finitos.")
+
+    if fs <= 0:
+        raise ValueError("La frecuencia de muestreo debe ser positiva.")
+
+    if not np.isfinite(window_ms) or window_ms <= 0:
+        raise ValueError("window_ms debe ser positivo y finito.")
+
+    # Método 1: envolvente mediante la transformada de Hilbert.
+    if method == "hilbert":
+        return np.abs(hilbert(x))
+
+    # Método 2: media móvil RMS.
+    if method == "moving_average":
+        window = max(1, int(window_ms * fs / 1000))
+
+        # Promediar la potencia instantánea dentro de la ventana.
+        potencia_local = uniform_filter1d(x**2, size=window, mode="reflect")
+
+        # Volver a unidades de amplitud.
+        return np.sqrt(np.maximum(potencia_local, 0.0))
+
+    raise ValueError("method debe ser 'hilbert' o 'moving_average'.")
 
 
 def apply_schroeder_integral(ir: np.ndarray) -> np.ndarray:

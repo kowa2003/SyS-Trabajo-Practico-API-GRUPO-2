@@ -173,7 +173,6 @@ def test_utils_schroeder_endpoint():
     assert isinstance(response.json(), dict)
 
 
-@xfail_m3
 def test_utils_smoothing_endpoint():
     """/api/v1/utils/smoothing devuelve la envolvente de la senal."""
     fs = 44100
