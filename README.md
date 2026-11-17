@@ -547,22 +547,30 @@ Ambas RIs fueron procesadas a través del módulo de filtrado por octava (`filte
 
 ---
 
-### 3. Resumen Comparativo de Validación
+### 3. Valores de Referencia para la Validación
 
-| Recinto | Banda (Hz) | Tiempo de Decaimiento Visual (RIR-API a -60 dB) | $T_{30}$ REW (Referencia) | Estado de Validación |
-| :--- | :---: | :---: | :---: | :---: |
-| **Hallway** | 125 | ~ 1,7 s | 1,708 s | Coincide |
-| **Hallway** | 250 | ~ 2,25 s | 2,274 s | Coincide |
-| **Hallway** | 500 | ~ 2,23 s | 2,237 s | Coincide |
-| **Hallway** | 1000 | ~ 2,25 s | 2,252 s | Coincide |
-| **Hallway** | 2000 | ~ 1,95 s | 1,945 s | Coincide |
-| **Hallway** | 4000 | ~ 1,15 s | 1,147 s | Coincide |
-| **Livingroom** | 125 | ~ 0,40 s | 0,403 s | Coincide |
-| **Livingroom** | 250 | ~ 0,55 s | 0,546 s | Coincide |
-| **Livingroom** | 500 | ~ 0,62 s | 0,623 s | Coincide |
-| **Livingroom** | 1000 | ~ 0,61 s | 0,613 s | Coincide |
-| **Livingroom** | 2000 | ~ 0,65 s | 0,655 s | Coincide |
-| **Livingroom** | 4000 | ~ 0,55 s | 0,554 s | Coincide |
+Se presentan los tiempos de reverberación $T_{30}$ obtenidos mediante REW para las respuestas al impulso de los recintos *Hallway* y *Livingroom*.
+
+Estos valores se utilizan como referencia externa para la validación del sistema. En M2 se realizó un análisis gráfico del decaimiento energético por bandas de octava, pero todavía no se implementó el cálculo numérico de los tiempos de reverberación mediante la integral de Schroeder.
+
+| Recinto | Banda (Hz) | $T_{30}$ REW (Referencia) |
+| :--- | :---: | :---: |
+| **Hallway** | 125 | 1,708 s |
+| **Hallway** | 250 | 2,274 s |
+| **Hallway** | 500 | 2,237 s |
+| **Hallway** | 1000 | 2,252 s |
+| **Hallway** | 2000 | 1,945 s |
+| **Hallway** | 4000 | 1,147 s |
+| **Livingroom** | 125 | 0,403 s |
+| **Livingroom** | 250 | 0,546 s |
+| **Livingroom** | 500 | 0,623 s |
+| **Livingroom** | 1000 | 0,613 s |
+| **Livingroom** | 2000 | 0,655 s |
+| **Livingroom** | 4000 | 0,554 s |
+
+**Alcance de la validación:** Los valores de esta tabla corresponden exclusivamente a REW y no representan resultados calculados por nuestra API.
+
+La comparación numérica entre ambos sistemas se realizará en M3, mediante la implementación de la integral de Schroeder, el cálculo de los parámetros acústicos y su contrastación con los resultados de referencia.
 
 ## Tests
 
