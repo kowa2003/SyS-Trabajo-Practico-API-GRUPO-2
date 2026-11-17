@@ -153,7 +153,6 @@ def test_invalid_file_returns_422():
 # ── M3 ───────────────────────────────────────────────────────────────────────
 
 
-@xfail_m3
 def test_acoustics_parameters_endpoint():
     """Enviar una RI a /api/v1/acoustics/parameters devuelve los parametros por banda."""
     fs = 44100
@@ -163,7 +162,6 @@ def test_acoustics_parameters_endpoint():
     assert isinstance(response.json(), dict)
 
 
-@xfail_m3
 def test_utils_schroeder_endpoint():
     """/api/v1/utils/schroeder devuelve la curva de caida (en dB, decreciente)."""
     fs = 44100
