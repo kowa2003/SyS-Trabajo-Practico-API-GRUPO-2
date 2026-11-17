@@ -211,3 +211,26 @@ Las propuestas se contrastaron con la especificación oficial de M3 y con las fu
 La herramienta se utilizó para organizar y redactar documentación, no para implementar o ejecutar las funcionalidades.
 
 La aceptación definitiva de los cambios, su implementación y la comprobación de los tests quedan a cargo de los integrantes del grupo.
+
+### Implementación del servicio de suavizado y su endpoint
+
+**Herramienta:** ChatGPT (OpenAI).
+
+**Objetivo:** Asistencia para implementar `apply_smoothing` y el endpoint `/api/v1/utils/smoothing`.
+
+**Uso de IA:**
+
+Se utilizó ChatGPT para comprender los métodos de suavizado mediante transformada de Hilbert y media móvil RMS, proponer la implementación en Python y desarrollar el endpoint FastAPI con sus correspondientes schemas Pydantic.
+
+La herramienta también brindó asistencia para corregir advertencias del linter Ruff relacionadas con el uso de `Annotated` y `StrEnum`.
+
+**Verificación realizada:**
+
+- Se ejecutaron los tests del servicio, obteniendo 3 pruebas satisfactorias.
+- Se comprobó el test automatizado del endpoint.
+- Se realizaron pruebas manuales desde Swagger utilizando una respuesta al impulso sintética.
+- Se compararon los resultados de ambos métodos y se verificó el manejo de entradas inválidas mediante HTTP 422.
+
+**Evaluación:**
+
+La asistencia permitió completar la implementación y comprender las diferencias entre ambos métodos. Los resultados fueron comprobados mediante pruebas locales, sin asumir que el código generado era correcto únicamente por provenir de IA.
