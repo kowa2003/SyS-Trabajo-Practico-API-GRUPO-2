@@ -59,15 +59,11 @@ for file_name in files_to_process:
     # ---------------------------------------------------------
     N = len(signal)
 
-    # Ventana Hann para reducir la fuga espectral
-    window = np.hanning(N)
-    windowed_signal = signal * window
+    # Transformada de Fourier de la RI completa, sin aplicar ventana.
+    spectrum = np.abs(np.fft.rfft(signal))
 
-    # Transformada de Fourier para señales reales
-    spectrum = np.abs(np.fft.rfft(windowed_signal))
-
-    # Escala de amplitud de un solo lado
-    spectrum = spectrum / np.sum(window)
+    # Escala de amplitud de un solo lado.
+    spectrum = spectrum / N
     spectrum[1:-1] *= 2
 
     frequencies = np.fft.rfftfreq(N, d=1 / fs)
