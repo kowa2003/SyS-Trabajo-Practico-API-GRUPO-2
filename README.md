@@ -588,7 +588,57 @@ El gráfico presenta los valores de T20 y T30 obtenidos mediante REW. Se conserv
 
 ---
 
-### 3. Valores de Referencia para la Validación
+### 3. Validación de recuperación de una RI sintética
+
+Se verificó el procedimiento de recuperación de respuestas al impulso mediante una prueba con una RI sintética conocida. Esta prueba está implementada en `tests/test_procesamiento.py`, en la función `test_impulse_response_peak()`.
+
+El procedimiento consiste en:
+
+1. Generar una RI sintética de 0,5 segundos, compuesta por un impulso directo y una cola exponencial, filtrada entre 100 Hz y 10 kHz.
+2. Generar un *sine sweep* de 2 segundos, con frecuencias comprendidas entre 20 Hz y 20 kHz, junto con su filtro inverso.
+3. Simular una grabación mediante la convolución del sweep con la RI original.
+4. Recuperar la respuesta al impulso mediante `get_impulse_response()`, utilizando la grabación simulada y el filtro inverso.
+5. Alinear la RI recuperada con la original mediante correlación cruzada y comparar el tramo superpuesto.
+
+**Criterio de aceptación:** el valor absoluto del coeficiente de correlación entre ambas señales debe ser superior a 0,9.
+
+**Resultado de la ejecución:**
+
+```text
+uv run pytest tests/test_procesamiento.py::test_impulse_response_peak -v
+
+1 passed in 1.48s
+```
+
+La prueba verifica que el procedimiento de deconvolución permite recuperar una respuesta al impulso suficientemente similar a la original, considerando la alineación temporal.
+
+### 4. Validación con la API de referencia de la cátedra
+
+Para validar las respuestas al impulso utilizadas en M2, se enviaron los archivos `h042_Hallway_ElementarySchool_4txts.wav` y `h045_Livingroom_4txts.wav` a la API de referencia de la cátedra, mediante el endpoint:
+
+`POST /api/v1/acoustics/parameters/bands`
+
+La solicitud se realizó utilizando el campo multipart/form-data `file`, enviando cada archivo WAV por separado. Las respuestas completas del servicio se conservaron en formato JSON:
+
+- `docs/m2/referencia_h042.json`
+- `docs/m2/referencia_h045.json`
+
+Cada respuesta incluye información del archivo procesado, la configuración del análisis, las frecuencias centrales evaluadas y los parámetros acústicos calculados por banda: $T_{30}$, $T_{20}$, $T_{10}$ y EDT.
+
+A continuación, se resumen los valores de $T_{30}$ devueltos por la API de referencia para las seis frecuencias centrales utilizadas en nuestro análisis M2:
+
+| Frecuencia (Hz) | h042 - Hallway (s) | h045 - Livingroom (s) |
+| :---: | :---: | :---: |
+| 125 | 1,566 | 0,364 |
+| 250 | 2,042 | 0,492 |
+| 500 | 1,990 | 0,554 |
+| 1000 | 2,039 | 0,531 |
+| 2000 | 1,723 | 0,535 |
+| 4000 | 0,886 | 0,438 |
+
+**Alcance de esta validación:** estos valores corresponden a las respuestas obtenidas del servicio de referencia de la cátedra. Los archivos JSON conservan los resultados completos para cada frecuencia. Esta documentación no implica que nuestra implementación local ya reproduzca dichos valores; la comparación numérica entre ambos servicios requiere evaluar las respuestas de nuestra propia API.
+
+### 5. Valores de Referencia para la Validación
 
 Se presentan los tiempos de reverberación $T_{30}$ obtenidos mediante REW para las respuestas al impulso de los recintos *Hallway* y *Livingroom*.
 
