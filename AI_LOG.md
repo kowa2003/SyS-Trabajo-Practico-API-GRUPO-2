@@ -1,4 +1,146 @@
-## Log de Desarrollo con Inteligencia Artificial (AI_LOG.md) — Milestone 2
+# Log de Desarrollo con Inteligencia Artificial (AI_LOG.md)
+
+## Milestone 0 — Arquitectura y configuración inicial
+
+### Información del milestone
+
+- **Período:** Octubre de 2026.
+- **Herramienta utilizada:** ChatGPT (OpenAI).
+- **Objetivo:** Asistencia en la configuración del entorno de desarrollo y revisión de la documentación de arquitectura.
+
+### Entrada 1: Diagnóstico de problemas con Uvicorn y uv
+
+**Consulta realizada (7/10/2026):**
+
+> "uv run python -m uvicorn app.main:app --reload" con este codigo funciona, pero antes funcionaba co el codigo que te mande al pricipio de una. Yo no cambie la carpeta de lugar. Porque le pinta esa ahora?
+
+También se consultó:
+
+> sigue teniendo el mismo error. Yo estoy usando la libreria "git" para trabajar en un repositorio en conjunto, puede ser que alguien haya subido algo al repositorio y que por eso deje de funcionar uv?
+
+**Resultado obtenido:**
+
+- Se analizaron posibles causas del error de ejecución de Uvicorn en Windows.
+- Se explicó la diferencia entre ejecutar directamente el comando `uvicorn` y utilizar `python -m uvicorn`.
+- Se revisó conceptualmente la relación entre el entorno virtual, las dependencias administradas por `uv` y los archivos del repositorio.
+
+**Verificación y aprendizaje:**
+
+Se comprobó que la API podía ejecutarse utilizando `uv run python -m uvicorn app.main:app --reload`.
+
+La interacción permitió comprender mejor el funcionamiento del entorno virtual y distinguir problemas de ejecución local de posibles modificaciones del repositorio.
+
+### Entrada 2: Revisión del diagrama de arquitectura
+
+**Consulta realizada (28/10/2026, revisión posterior de M0):**
+
+> esta bueno lo que hiciste, pero intenta que sea más parecido al que ya esta en el README no quiero que sea suuuuper especifico en el sentido de como va la señal. Fijate el que esta en el readme, hasta es mucho más didactivo y entendible que el choclazo que acabas de hacer.
+
+**Resultado obtenido:**
+
+- Se utilizó ChatGPT para revisar la presentación del diagrama de arquitectura.
+- Se solicitó simplificar el nivel de detalle y mantener una representación más didáctica de los componentes de la API.
+- Se priorizó explicar la organización del sistema sin representar innecesariamente cada operación interna del procesamiento de señales.
+
+**Verificación y aprendizaje:**
+
+La propuesta generada inicialmente por IA resultó demasiado detallada. Se revisó críticamente y se solicitó una alternativa más cercana al diagrama original del README.
+
+Esta interacción permitió reconocer que una documentación técnicamente detallada no necesariamente es la más clara para comunicar la arquitectura de un proyecto.
+
+---
+
+## Milestone 1 — Generación de señales y reproducción/grabación
+
+### Información del milestone
+
+- **Período:** Octubre de 2026.
+- **Herramienta utilizada:** ChatGPT (OpenAI).
+- **Objetivo:** Asistencia durante el desarrollo, las pruebas y la documentación de los servicios de generación y reproducción/grabación de audio.
+
+### Entrada 1: Validaciones del Sine Sweep y schemas de FastAPI
+
+**Consulta realizada (22/10/2026):**
+
+> che chatgpt ahi corri mi api, tengo una duda. Yo en mi schema tengo este codigo. Cuando abro mi API e intento ejecutar poniendo que mi f1= 1 no me deja, lo mismo si intento que f2= sea mayor que 20000
+
+**Resultado obtenido:**
+
+- Se analizaron las restricciones de frecuencia definidas en el schema de entrada.
+- Se explicó cómo Pydantic aplica los límites de validación sobre los parámetros enviados desde Swagger.
+- Se revisó la relación entre los valores permitidos, el generador de sine sweep y las pruebas automatizadas.
+
+**Verificación y aprendizaje:**
+
+Se realizaron pruebas desde la API para observar el comportamiento de los parámetros de entrada.
+
+La interacción permitió comprender que las restricciones del schema deben estar alineadas con las condiciones de funcionamiento del servicio y con sus tests.
+
+### Entrada 2: Prueba de play_and_record y funcionamiento de Swagger
+
+**Consulta realizada (24/10/2026):**
+
+> y la funcion play and record como se puede probar en el swagger?
+
+Posteriormente se consultó:
+
+> recien ejecute el codigo de python para comprobar si funciona el servicio play_and_record. En data quedo la grabacion_m1. Eso tiene que estar para la entrega? osea deberia subirlo al main no?
+
+**Resultado obtenido:**
+
+- Se explicó la diferencia entre probar servicios expuestos mediante endpoints HTTP y ejecutar directamente funciones que interactúan con dispositivos de audio.
+- Se brindó asistencia para realizar una prueba local de reproducción y grabación.
+- Se discutió cómo conservar las evidencias relevantes para la entrega sin incorporar archivos innecesarios al repositorio.
+
+**Verificación y aprendizaje:**
+
+Se ejecutó una prueba real de `play_and_record` y se obtuvo el archivo de grabación correspondiente.
+
+Esta prueba permitió comprobar el funcionamiento del servicio en una situación distinta de los tests automatizados, utilizando dispositivos físicos de audio.
+
+### Entrada 3: Documentación y evidencias de la grabación real
+
+**Consulta realizada (28/10/2026):**
+
+> bien, de la parte de los de grabación de la grabación real de la API quiero que hagas la misma explicacion pero en vez de guardar los archivos en data quiero que se guarden en la carpeta docs/m1, es posible?
+
+También se realizó la siguiente consulta:
+
+> che, cuando hago el comando de uv run python -m docs.m1.prueba_grabacion no pasa nada
+
+**Resultado obtenido:**
+
+- Se brindó asistencia para organizar las evidencias de grabación dentro de `docs/m1/`.
+- Se revisó el procedimiento de ejecución del script de prueba real.
+- Se analizaron problemas relacionados con la ejecución del módulo de Python.
+- Se trabajó sobre la documentación de los dispositivos, canales, frecuencia de muestreo y configuración de grabación.
+
+**Verificación y aprendizaje:**
+
+Se realizaron comprobaciones locales del script y de la generación de archivos de evidencia.
+
+La interacción permitió mejorar la reproducibilidad de las pruebas y comprender la importancia de documentar las condiciones reales bajo las cuales se verificó un servicio de audio.
+
+### Entrada 4: Documentación técnica y calidad del código
+
+**Consulta realizada (octubre de 2026):**
+
+> a que se refiere con docstrings y type hints?
+
+**Resultado obtenido:**
+
+- Se explicó cómo utilizar docstrings para documentar el propósito, los parámetros y los resultados de las funciones.
+- Se explicó el uso de type hints para indicar los tipos de entrada y salida.
+- Se relacionaron estos elementos con los requisitos de documentación y mantenimiento del proyecto.
+
+**Verificación y aprendizaje:**
+
+Se revisó la documentación de las funciones implementadas y su relación con los criterios de calidad solicitados por la cátedra.
+
+Esta interacción facilitó la comprensión de buenas prácticas de documentación en Python.
+
+
+## Milestone 2
 
 ### Información del Milestone
 * **Fecha:** 4 de noviembre de 2026
