@@ -96,7 +96,30 @@ def apply_schroeder_integral(ir: np.ndarray) -> np.ndarray:
     .. [1] Schroeder, M. R. (1965). "New method of measuring reverberation
        time." JASA 37(3), 409-412.
     """
-    raise NotImplementedError("Implementar en Milestone 3")
+    # 1. Energía instantánea al cuadrado (h^2)
+    ir_sq = ir**2
+
+    # 2. Integración inversa: acumular de atrás hacia adelante
+    e_t = np.cumsum(ir_sq[::-1])[::-1]
+
+    # 3. Obtener la energía total inicial (E[0]) como float
+    e_0 = float(e_t[0])
+
+    # 4. Manejo de seguridad si la señal no tiene energía o es inválida
+    if not np.isfinite(e_0) or e_0 <= 0:
+        return np.full_like(ir, -150.0, dtype=float)
+
+    # 5. Normalizar PRIMERO para obtener el ratio adimensional (entre 0 y 1)
+    ratio = e_t / e_0
+
+    # 6. Limitar el ratio usando np.clip con la fórmula exacta de -150 dB (10^(-150/10))
+    # Esto evita valores positivos y fija un piso seguro sin depender de amplitudes absolutas.
+    ratio = np.clip(ratio, 10.0 ** (-150.0 / 10.0), 1.0)
+
+    # 7. Conversión final a decibelios energéticos (10 * log10)
+    edc_db = 10.0 * np.log10(ratio)
+
+    return edc_db
 
 
 def linear_regression(x: np.ndarray, y: np.ndarray) -> tuple[float, float, float]:
