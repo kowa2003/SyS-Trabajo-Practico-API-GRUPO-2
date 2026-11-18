@@ -7,7 +7,7 @@
 - **Período:** Octubre de 2026.
 - **Herramienta utilizada:** ChatGPT (OpenAI).
 - **Objetivo:** Asistencia en la configuración del entorno de desarrollo y revisión de la documentación de arquitectura.
-
+- **Integrante:** Joaquin Vargas
 ### Entrada 1: Diagnóstico de problemas con Uvicorn y uv
 
 **Consulta realizada (7/10/2026):**
@@ -57,6 +57,7 @@ Esta interacción permitió reconocer que una documentación técnicamente detal
 - **Período:** Octubre de 2026.
 - **Herramienta utilizada:** ChatGPT (OpenAI).
 - **Objetivo:** Asistencia durante el desarrollo, las pruebas y la documentación de los servicios de generación y reproducción/grabación de audio.
+- **Integrante:** Joaquin Vargas
 
 ### Entrada 1: Validaciones del Sine Sweep y schemas de FastAPI
 
@@ -154,7 +155,8 @@ Para subir el espectrograma del sine sweep a GitHub y lograr que se visualice co
 
 ### Entrada 6: Generar funcion Play_and_record
 
-* IA UTILIZADA: Gemini
+* **IA UTILIZADA**: Gemini
+* **Integrante:** Agustin Quaglia
 
 **Consulta realizada (Prompt):**
 
@@ -180,6 +182,94 @@ Importación perezosa y manejo de dispositivos: Inclusión de import sounddevice
 
 - Pruebas automatizadas y manejo de errores: Uso de importación perezosa de sounddevice dentro de la función para permitir su simulación con monkeypatch en pytest, validando tipos de retorno, excepciones ante fallos de dispositivo (RuntimeError) y ejecución consistente del entorno mediante uv run pytest -v.
 
+
+
+### Entrada 7: Implementación de la generación de ruido rosa (generate_pink_noise)
+
+* **IA UTILIZADA:** Claude (Anthropic) 
+* **Integrante:** Rodrigo Sanchez Tejerina
+
+**Consulta realizada:**
+
+Se solicitó asistencia para comprender cómo implementar una función de generación de ruido rosa, ya que inicialmente no se tenía claro qué método utilizar.
+
+**Resultado obtenido:**
+
+Se propuso generar ruido blanco y transformarlo al dominio de la frecuencia mediante rfft.
+
+Se explicó cómo aplicar una ponderación proporcional a (1/\sqrt{f}) para obtener el comportamiento espectral del ruido rosa.
+
+Se propuso volver al dominio temporal mediante irfft y normalizar posteriormente la señal.
+
+La estrategia estaba contemplada en el docstring de la función.
+
+**Verificación y aprendizaje:**
+
+Se ejecutaron los tests de test_generacion.py.
+
+Se analizó el espectro de la señal generada utilizando Audacity.
+
+Se verificó aproximadamente una pendiente de -10 dB/década (≈ -3 dB/octava).
+
+Los resultados de la validación quedaron documentados en docs/m1/.
+
+La implementación pasó las pruebas y produjo un espectro compatible con el comportamiento esperado del ruido rosa.
+
+### Entrada 8: Implementación del endpoint de ruido rosa
+
+* **IA UTILIZADA:** Claude (Anthropic) 
+* **Integrante:** Rodrigo Sanchez Tejerina
+
+**Consulta realizada:**
+
+Se solicitó asistencia para desarrollar el schema, el router y registrar el endpoint de generación de ruido rosa en main.py.
+
+Resultado obtenido:
+
+Se propuso la estructura de PinkNoiseRequest.
+
+Se desarrolló el endpoint POST /api/v1/signals/pink-noise.
+
+Se utilizó wav_response para devolver la señal generada en formato WAV.
+
+Se indicó cómo registrar el router correspondiente en main.py.
+
+**Verificación y aprendizaje:**
+
+Se probó el endpoint desde Swagger (/docs).
+
+Se comprobó una respuesta HTTP 200 con un archivo WAV válido.
+
+Se verificó que una duración negativa generara HTTP 422.
+
+Se ejecutó el test automatizado test_signals_pink_noise_endpoint.
+
+La interacción permitió comprender la relación entre los schemas de entrada, los routers de FastAPI y la respuesta de audio del servicio.
+
+### Entrada 9: Validación espectral del ruido rosa mediante Audacity
+
+* **IA UTILIZADA:** Claude (Anthropic) 
+* **Integrante:** Rodrigo Sanchez Tejerina
+
+**Consulta realizada:**
+
+Se solicitó orientación para medir y comprobar la pendiente del espectro de frecuencias del ruido rosa generado.
+
+Resultado obtenido:
+
+Se proporcionaron indicaciones para visualizar el espectro de frecuencias en Audacity.
+
+Se explicó cómo analizar los niveles en decibelios y comprobar el comportamiento espectral esperado.
+
+Limitaciones y correcciones:
+
+Inicialmente, la IA indicó que aumentar el tamaño de la FFT suavizaría la curva del espectro. Al realizar las pruebas se comprobó que esta explicación no era correcta: aumentar el tamaño de la FFT proporciona mayor resolución frecuencial, por lo que puede mostrar más variaciones en el espectro.
+
+**Verificación y aprendizaje:**
+
+Se contrastaron las indicaciones con las mediciones realizadas en Audacity y se corrigió la interpretación inicial.
+
+Esta interacción permitió comprender mejor la relación entre el tamaño de la FFT, la resolución frecuencial y la visualización del espectro.
 ---
 
 ## Milestone 2
@@ -188,7 +278,7 @@ Importación perezosa y manejo de dispositivos: Inclusión de import sounddevice
 * **Fecha:** 4 de noviembre de 2026
 * **Milestone:** Milestone 2 (M2) — Procesamiento de la Respuesta al Impulso (RI)
 * **Herramienta utilizada:** Gemini
-
+* **Integrante:** Agustin Quaglia
 ---
 
 ### Registro de Prompts Clave e Interacciones
@@ -218,7 +308,8 @@ Importación perezosa y manejo de dispositivos: Inclusión de import sounddevice
 
 #### Entrada 3: Generación del codigo del servicio logarithmic_scale_conversion(signal)
 
-* IA UTILIZADA: Gemini
+* **IA UTILIZADA:** Gemini
+* **Integrante:** Agustin Quaglia
 
 * **Consulta realizada (Prompt):**
   > para la aplicacion que venimos desarrollando de respuesta al impulso, tengo que hacer la funcion de convertir a escala logarimitca la señal, y me da esta data (adjunte imagenes de las especificaciones de la funcion que aparecian en la web de guia)
@@ -232,6 +323,37 @@ Importación perezosa y manejo de dispositivos: Inclusión de import sounddevice
   * Si bien la herramienta agilizó la escritura del código en NumPy, fue clave aplicar criterio acústico para definir el umbral inferior: fijar el piso en `-120 dB` permite aprovechar el rango dinámico de equipamiento e interfaces de grabación profesionales (de 24 bits) sin truncar prematuramente las colas de decaimiento de la sala.
   * Asimismo, se auditó el código generado para asegurar que se aplicara el factor de escala correspondiente a magnitudes de amplitud o presión, y no el utilizado para energía o potencia.
 
+### Entrada 4: Validación espectral del ruido rosa mediante Audacity
+
+* **IA UTILIZADA:** Claude (Anthropic) 
+* **Integrante:** Rodrigo Sanchez Tejerina
+
+**Consulta realizada:**
+
+Se solicitó asistencia para comprender cómo implementar el filtro de bandas de octava a partir del docstring y los tests existentes, así como desarrollar el endpoint correspondiente para procesar archivos de audio.
+
+**Resultado obtenido:**
+
+Se propuso una implementación del filtro Butterworth pasabanda utilizando butter(output="sos") y sosfiltfilt.
+
+Se incorporó una validación de frecuencia de Nyquist para evitar configuraciones de filtrado inválidas.
+
+Se propuso una estructura de endpoint que recibe archivos mediante UploadFile.
+
+Se contempló el manejo de archivos inválidos mediante respuestas HTTP 422.
+
+
+**Verificación y aprendizaje:**
+
+SSe ejecutaron los tres tests de TestFilterSingleBand.
+
+Se ejecutaron los tests correspondientes al endpoint.
+
+Se realizaron las verificaciones de Ruff.
+
+Durante la implementación se profundizó en el funcionamiento de sosfiltfilt, que realiza un filtrado hacia adelante y hacia atrás.
+
+Se comprendió que ambas pasadas modifican la respuesta en magnitud: una atenuación de aproximadamente -3 dB en los bordes del Butterworth de una pasada pasa a ser aproximadamente -6 dB en el filtrado bidireccional. Este procedimiento permite obtener fase cero, aunque puede producir efectos transitorios en los extremos de la señal.
 ---
 
 
@@ -243,6 +365,7 @@ Importación perezosa y manejo de dispositivos: Inclusión de import sounddevice
 - **Herramienta utilizada:** ChatGPT (OpenAI).
 - **Milestone:** M3 — Producto final.
 - **Objetivo:** Revisión y organización de las issues de desarrollo.
+- **Integrante:** Joaquin Vargas
 
 ### Uso de inteligencia artificial
 
@@ -296,3 +419,70 @@ La herramienta también brindó asistencia para corregir advertencias del linter
 **Evaluación:**
 
 La asistencia permitió completar la implementación y comprender las diferencias entre ambos métodos. Los resultados fueron comprobados mediante pruebas locales, sin asumir que el código generado era correcto únicamente por provenir de IA.
+
+
+### Resultado obtenido
+
+La herramienta propuso reorganizar las siguientes issues:
+
+- **#9 — Suavizado:** `apply_smoothing` junto al e
+Milestone 3 — Análisis acústico y producto final
+
+### Información del milestone 3
+
+* **IA UTILIZADA:** ChatGPT (OpenAI) 
+* **Integrante:** Rodrigo Sanchez Tejerina
+* **Objetivo:** Asistencia en la implementación de los cálculos de parámetros acústicos según ISO 3382 y el desarrollo del endpoint principal de análisis.
+
+### Entrada 1: Implementación de los parámetros acústicos y el endpoint de análisis
+
+**Consulta realizada:**
+Se solicitó asistencia para implementar los cálculos acústicos de acuerdo con ISO 3382 y desarrollar el endpoint POST /api/v1/acoustics/parameters.
+
+También se consultó sobre los fundamentos de la regresión lineal, la curva de Schroeder y las relaciones de energía utilizadas para obtener los parámetros acústicos.
+
+**Resultado obtenido:**
+
+Se propuso una implementación de linear_regression mediante mínimos cuadrados, incluyendo pendiente, intercepto y coeficiente de determinación R².
+
+Se brindó asistencia para implementar calculate_parameters_from_ir.
+
+Se desarrollaron propuestas de funciones auxiliares para estimar el rango dinámico, calcular tiempos de reverberación y obtener D50 y C80.
+
+Se propuso la estructura del schema BandAnalysisResponse.
+
+Se desarrolló la estructura del router acoustics.py y se indicó cómo registrarlo en main.py.
+
+Se explicaron conceptos relacionados con las bandas de octava, la frecuencia de Nyquist y el manejo de parámetros no calculables mediante None.
+
+**Verificación y aprendizaje:**:
+
+Se realizaron las siguientes comprobaciones:
+
+Ejecución de los tests de tests/test_analisis.py y tests/test_api.py.
+
+Ejecución de la suite completa mediante uv run pytest -v, obteniendo 51 tests aprobados.
+
+Ejecución de uv run ruff check app tests, obteniendo All checks passed!.
+
+Ejecución de uv run ruff format --check app tests, obteniendo 26 files already formatted.
+
+Verificación del endpoint desde Swagger, comprobando que estuviera registrado y recibiera archivos WAV correctamente.
+
+**Depuración:**
+
+Se utilizó ChatGPT para interpretar errores de pytest, distinguir entre XPASS, XFAIL y FAILED, corregir problemas de importación y registro del router y solucionar advertencias de Ruff.
+
+Limitaciones y revisiones posteriores:
+
+Durante una comparación preliminar con REW se detectó que algunos parámetros, especialmente EDT, podían devolver None, aunque T30 presentara un resultado cercano al de referencia.
+
+También se identificó un umbral de R² de 0.99 que podía descartar regresiones válidas. La sugerencia de IA de utilizar ese umbral fue revisada y cuestionada.
+
+A partir de estas observaciones se comenzó a investigar la detección del instante de llegada directa y la normalización de la integral de Schroeder, para evitar tomar automáticamente la primera muestra del archivo como referencia temporal.
+
+Evaluación y criterio propio:
+
+La asistencia permitió avanzar en la implementación y comprender los fundamentos de los cálculos acústicos. Sin embargo, no se consideró que la aprobación de los tests fuera suficiente para garantizar la precisión de los resultados.
+
+La comparación con REW permitió identificar aspectos que requieren validación adicional sobre respuestas al impulso reales.
