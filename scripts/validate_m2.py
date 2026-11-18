@@ -1,3 +1,35 @@
+"""Script de validación acústica y análisis espectral para el Milestone 2 (M2).
+
+Procesa respuestas al impulso (RIs) reales en formato WAV ubicadas en ``docs/m2/``
+utilizando los servicios de procesamiento de señales del proyecto, y genera tres
+gráficas de diagnóstico por cada archivo analizado:
+
+1. **Forma de onda**: señal temporal normalizada de la RI original.
+2. **Espectro de magnitud**: transformada rápida de Fourier (rFFT) de un solo lado
+   expresada en decibeles relativos al pico máximo (0 dB), incluyendo un diagnóstico
+   por consola del contenido energético en altas frecuencias (8 kHz a 16 kHz) y
+   el conteo de muestras en el piso de -120 dB.
+3. **Curvas de decaimiento multi-banda**: filtrado por bandas de octava normalizadas
+   según IEC 61260 (125 Hz, 250 Hz, 500 Hz, 1 kHz, 2 kHz y 4 kHz) mediante filtros
+   Butterworth de fase cero y conversión a escala logarítmica en dB.
+
+Outputs
+-------
+docs/m2/forma_onda_<nombre_archivo>.png
+    Gráfica de amplitud vs. tiempo de la respuesta al impulso original.
+docs/m2/espectro_<nombre_archivo>.png
+    Gráfica del espectro de magnitud relativa [dB] vs. frecuencia [Hz].
+docs/m2/val_multiband_<nombre_archivo>.png
+    Figura de 6 paneles con las curvas de decaimiento en dB para cada banda de octava.
+
+Notes
+-----
+El script debe ejecutarse desde la raíz del repositorio para resolver correctamente
+las importaciones internas de ``app.services``:
+
+    $ uv run python -m scripts.validate_m2
+"""
+
 import sys
 from pathlib import Path
 
