@@ -139,6 +139,48 @@ Se revisó la documentación de las funciones implementadas y su relación con l
 
 Esta interacción facilitó la comprensión de buenas prácticas de documentación en Python.
 
+### Entrada 5: Cargar imagen en una rama de validacion.
+
+> "puse el archivo de audio digital en REW y en la pestaña me de espectograma sale eso, entonces ahora tengo que subir la validacion a git hub, haciendo el agregado de imagen en una rama de validacion, como hago paso a paso?"
+
+**Resultado obtenido:**
+
+Para subir el espectrograma del sine sweep a GitHub y lograr que se visualice correctamente en el README.md, el proceso se resumió en guardar la gráfica en escala logarítmica dentro de la carpeta docs/m1/ (sin espacios ni mayúsculas inconsistentes en el nombre del archivo), crear una nueva rama de validación (git checkout -b ...), confirmar los cambios con git add y git commit, y publicarlos con git push. Finalmente, para que las imágenes se renderizaran en el documento y no aparecieran rotas o como enlaces simples, fue necesario agregar explícitamente las rutas relativas dentro del README.md anteponiendo el signo de exclamación (![Descripción](docs/m1/archivo.png)) bajo sus respectivos subtítulos.
+
+**Verificación y aprendizaje:**
+
+-Flujo de trabajo en ramas.
+-Utilizacion de comandos git.
+
+### Entrada 6: Generar funcion Play_and_record
+
+* IA UTILIZADA: Gemini
+
+**Consulta realizada (Prompt):**
+
+> Tengo que generar una funcion en python que sea para grabar y reproducir a la vez, se va a reproducir y grabar un sine sweep y un ruido rosa. Esto lo estamos trabajando con un repositorio y github entre 4 amigos, donde deberia codear la funcion y los test que pasa. Ahi adjunto parte de la consigna y foto de mi VS CODE con el repositorio descargado localmente. (Adjunte fotos)
+
+>adjunto screen del repositorio local mio de vs code y como aparece el servicio de play_and_record y los test que ya aparecen
+
+**Resultado obtenido:**
+
+- Ubicación en el repositorio y flujo colaborativo: Se identificó que la implementación corresponde al módulo app/services/audio_io.py y su validación automática se encuentra en tests/test_generacion.py (específicamente en test_play_and_record_shape). Para trabajar entre los 4 integrantes sin generar conflictos, se estableció trabajar en una rama dedicada por tarea (feature/play_and_record).
+
+- Estructura de play_and_record(signal, fs, record_duration): Se diseñó la función cumpliendo las especificaciones del servicio:   
+
+Control de duración y márgenes: Validación de que record_duration sea mayor o igual a la duración de la señal (ValueError en caso contrario) y agregado de silencio inicial (pre-roll para compensar latencia) y final (post-roll) hasta alcanzar exactamente int(record_duration * fs) muestras.   
+
+Compatibilidad 1D y 2D: Manejo de señales mono (1D) y estéreo/multicanal (2D con forma (muestras, canales)).   
+
+Importación perezosa y manejo de dispositivos: Inclusión de import sounddevice as sd dentro de la función —y no al inicio del archivo— junto con un bloque try/except que captura la ausencia de interfaz de audio y lanza un RuntimeError con un mensaje descriptivo.
+
+**Verificación y aprendizaje:**
+
+- Acondicionamiento de señales en NumPy: Manejo de arreglos 1D (mono) y 2D (estéreo) aplicando relleno de ceros (pre-roll para compensar latencia y post-roll para cola de reverberación) hasta alcanzar exactamente int(record_duration * fs) muestras.
+
+- Pruebas automatizadas y manejo de errores: Uso de importación perezosa de sounddevice dentro de la función para permitir su simulación con monkeypatch en pytest, validando tipos de retorno, excepciones ante fallos de dispositivo (RuntimeError) y ejecución consistente del entorno mediante uv run pytest -v.
+
+---
 
 ## Milestone 2
 
@@ -171,6 +213,26 @@ Esta interacción facilitó la comprensión de buenas prácticas de documentaci�
   * Texto explicativo estructurado enlazando secuencialmente cada figura y tabla resumen comparativa entre la API y el software comercial.
 * **Evaluación y aprendizaje:**
   * Facilitó el volcado directo de los resultados de validación requeridos en la rúbrica del README sin necesidad de redactar informes en PDF externos.
+
+---
+
+#### Entrada 3: Generación del codigo del servicio logarithmic_scale_conversion(signal)
+
+* IA UTILIZADA: Gemini
+
+* **Consulta realizada (Prompt):**
+  > para la aplicacion que venimos desarrollando de respuesta al impulso, tengo que hacer la funcion de convertir a escala logarimitca la señal, y me da esta data (adjunte imagenes de las especificaciones de la funcion que aparecian en la web de guia)
+
+* **Resultado obtenido:**
+  * Se obtuvo la implementación vectorizada en NumPy de la función para convertir la amplitud de la señal a escala logarítmica en decibelios, normalizando respecto al valor pico absoluto para que el máximo de la señal quede referenciado en cero decibelios.
+  * Se incorporó protección numérica para evitar divisiones por cero y valores indeterminados (como infinitos negativos) ante muestras silenciosas, garantizando que el arreglo resultante sea válido para las respuestas JSON de la API.
+
+* **Evaluación y aprendizaje:**
+  * Se reforzó la importancia de contemplar casos borde en señales reales (como tramos de silencio digital o rellenos con ceros), ya que un logaritmo sin un límite inferior genera errores de serialización en el endpoint.
+  * Si bien la herramienta agilizó la escritura del código en NumPy, fue clave aplicar criterio acústico para definir el umbral inferior: fijar el piso en `-120 dB` permite aprovechar el rango dinámico de equipamiento e interfaces de grabación profesionales (de 24 bits) sin truncar prematuramente las colas de decaimiento de la sala.
+  * Asimismo, se auditó el código generado para asegurar que se aplicara el factor de escala correspondiente a magnitudes de amplitud o presión, y no el utilizado para energía o potencia.
+
+---
 
 
 ## Milestone 3 — Organización y planificación del desarrollo
