@@ -35,6 +35,65 @@ for file_name in files_to_process:
     signal, fs = load_audio(audio_path)
     time = np.arange(len(signal)) / fs
 
+    # ---------------------------------------------------------
+    # 1. Forma de onda de la respuesta impulsional original
+    # ---------------------------------------------------------
+    plt.figure(figsize=(12, 4))
+    plt.plot(time, signal, linewidth=0.7)
+
+    plt.title(f"Forma de onda - {audio_path.stem}")
+    plt.xlabel("Tiempo [s]")
+    plt.ylabel("Amplitud")
+    plt.grid(True, linestyle="--", alpha=0.6)
+
+    plt.tight_layout()
+
+    output_waveform = m2_dir / f"forma_onda_{audio_path.stem}.png"
+    plt.savefig(output_waveform, dpi=300)
+    plt.close()
+
+    print(f"Forma de onda guardada en: {output_waveform}")
+
+    # ---------------------------------------------------------
+    # 2. Espectro de magnitud de la respuesta impulsional
+    # ---------------------------------------------------------
+    N = len(signal)
+
+    # Transformada de Fourier de la RI completa, sin aplicar ventana.
+    spectrum = np.abs(np.fft.rfft(signal))
+
+    # Escala de amplitud de un solo lado.
+    spectrum = spectrum / N
+    spectrum[1:-1] *= 2
+
+    frequencies = np.fft.rfftfreq(N, d=1 / fs)
+
+    # Expresar el espectro en dB, referido a su máximo
+    spectrum_db = 20 * np.log10(np.maximum(spectrum / np.max(spectrum), 1e-6))
+
+    # Diagnóstico del contenido espectral
+    for freq in [8000, 10000, 12000, 14000, 16000]:
+        idx = np.argmin(np.abs(frequencies - freq))
+        print(f"{freq} Hz: {spectrum_db[idx]:.2f} dB")
+
+    plt.figure(figsize=(12, 4))
+    plt.plot(frequencies, spectrum_db, linewidth=0.8)
+
+    plt.title(f"Espectro de magnitud - {audio_path.stem}")
+    plt.xlabel("Frecuencia [Hz]")
+    plt.ylabel("Magnitud relativa [dB]")
+    plt.xlim(0, fs / 2)
+    plt.ylim(-120, 5)
+    plt.grid(True, linestyle="--", alpha=0.6)
+
+    plt.tight_layout()
+
+    output_spectrum = m2_dir / f"espectro_{audio_path.stem}.png"
+    plt.savefig(output_spectrum, dpi=300)
+    plt.close()
+
+    print(f"Espectro guardado en: {output_spectrum}")
+
     # Crear figura de 6 filas (una por cada banda)
     fig, axes = plt.subplots(len(center_frequencies), 1, figsize=(12, 14), sharex=True)
     fig.suptitle(
@@ -65,5 +124,9 @@ for file_name in files_to_process:
     output_png = m2_dir / f"val_multiband_{audio_path.stem}.png"
     plt.savefig(output_png, dpi=300)
     plt.close()
+
+    floor_count = np.sum(spectrum_db <= -119.99)
+
+    print(f"Muestras en el piso de -120 dB: {floor_count}/{len(spectrum_db)}")
 
     print(f"✓ Gráfica multi-banda guardada exitosamente en: {output_png}")
