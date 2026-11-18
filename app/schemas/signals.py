@@ -2,7 +2,7 @@
 
 Define los modelos de datos de entrada utilizados por los endpoints del router
 de señales (``/api/v1/signals/*``) para validar parámetros temporales,
-espectrales y de muestreo antes de ejecutar los servicios de procesamiento[cite: 1, 3].
+espectrales y de muestreo antes de ejecutar los servicios de procesamiento.
 """
 
 from pydantic import BaseModel, Field, PositiveFloat
