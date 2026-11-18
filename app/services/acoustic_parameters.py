@@ -3,11 +3,15 @@
 Milestone 3: Producto final.
 """
 
+import logging
+
 import numpy as np
 from scipy.ndimage import uniform_filter1d
 from scipy.signal import hilbert
 
 from app.services.filter import filter_single_band
+
+logger = logging.getLogger(__name__)
 
 
 def apply_smoothing(
@@ -224,7 +228,8 @@ def _calculate_reverberation_time(
     # Crear los índices temporales.
     indices = np.arange(len(edc_db))
 
-    # Seleccionar el intervalo de decaimiento.
+    # Seleccionar el intervalo completo de decaimiento.
+    # No descartar muestras anteriores al pico de amplitud.
     mask = (
         (indices >= peak_index) & (edc_db <= upper_db) & (edc_db >= lower_db) & np.isfinite(edc_db)
     )
@@ -252,9 +257,16 @@ def _calculate_reverberation_time(
     if not np.isfinite(r2):
         return None
 
-    # Rechazar ajustes que no representan un tramo suficientemente lineal.
+    # Evaluar la calidad de la regresion.
+    # Un R2 bajo genera una advertencia, no un rechazo automatico.
     if r2 < 0.99:
-        return None
+        logger.warning(
+            "Regresion poco lineal entre %.0f y %.0f dB: R2=%.4f, muestras=%d",
+            upper_db,
+            lower_db,
+            r2,
+            len(selected_indices),
+        )
 
     # Extrapolar el tiempo hasta -60 dB.
     reverberation_time = -60.0 / slope
@@ -346,6 +358,24 @@ def calculate_parameters_from_ir(ir: np.ndarray, fs: int) -> dict[str, dict[floa
     if not np.all(np.isfinite(ir)):
         raise ValueError("La RI contiene valores no finitos")
 
+    # Detectar el comienzo del sonido directo en la RI original.
+    global_peak = int(np.argmax(np.abs(ir)))
+    peak_amplitude = float(np.abs(ir[global_peak]))
+
+    if peak_amplitude == 0:
+        raise ValueError("La RI no contiene energia")
+
+    # Buscar la llegada dentro de los 5 ms previos al pico.
+    pre_samples = int(0.005 * fs)
+    search_start = max(0, global_peak - pre_samples)
+
+    # Umbral experimental: 10 % de la amplitud del pico.
+    threshold = 0.1 * peak_amplitude
+
+    candidates = np.flatnonzero(np.abs(ir[search_start : global_peak + 1]) >= threshold)
+
+    direct_index = search_start + int(candidates[0])
+
     # Bandas de octava que se deben analizar.
     center_frequencies = (
         125.0,
@@ -406,12 +436,6 @@ def calculate_parameters_from_ir(ir: np.ndarray, fs: int) -> dict[str, dict[floa
             raise ValueError(f"La banda {center_freq} Hz contiene valores no finitos")
 
         # -----------------------------------------
-        # 2. Encontrar la llegada directa
-        # -----------------------------------------
-
-        peak_index = int(np.argmax(np.abs(band)))
-
-        # -----------------------------------------
         # 3. Calcular la curva de Schroeder
         # -----------------------------------------
 
@@ -439,7 +463,7 @@ def calculate_parameters_from_ir(ir: np.ndarray, fs: int) -> dict[str, dict[floa
             reverberation_time = _calculate_reverberation_time(
                 edc_db=edc_db,
                 fs=fs,
-                peak_index=peak_index,
+                peak_index=direct_index,
                 upper_db=upper_db,
                 lower_db=lower_db,
                 dynamic_range_db=dynamic_range_db,
@@ -454,7 +478,7 @@ def calculate_parameters_from_ir(ir: np.ndarray, fs: int) -> dict[str, dict[floa
         d50, c80 = _calculate_energy_parameters(
             band=band,
             fs=fs,
-            peak_index=peak_index,
+            peak_index=direct_index,
         )
 
         parameters["D50"][center_freq] = d50
