@@ -1,3 +1,9 @@
+"""Router de filtrado espectral por bandas de octava.
+
+Expone los endpoints HTTP bajo el prefijo ``/api/v1/filters`` para aplicar
+filtros pasa-banda digitales Butterworth.
+"""
+
 import tempfile
 from pathlib import Path
 from typing import Annotated

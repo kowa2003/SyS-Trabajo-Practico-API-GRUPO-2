@@ -1,3 +1,10 @@
+"""Schemas Pydantic para la validación de peticiones de generación de señales.
+
+Define los modelos de datos de entrada utilizados por los endpoints del router
+de señales (``/api/v1/signals/*``) para validar parámetros temporales,
+espectrales y de muestreo antes de ejecutar los servicios de procesamiento.
+"""
+
 from pydantic import BaseModel, Field, PositiveFloat
 
 

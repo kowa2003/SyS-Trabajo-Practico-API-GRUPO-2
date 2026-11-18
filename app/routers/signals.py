@@ -1,3 +1,11 @@
+"""Router de generación y síntesis de señales acústicas.
+
+Expone los endpoints HTTP bajo el prefijo ``/api/v1/signals`` para generar
+señales de excitación normalizadas (ruido rosa y barrido senoidal logarítmico
+junto con su filtro inverso) y respuestas al impulso sintéticas multi-banda,
+entregando el resultado como archivos WAV descargables.
+"""
+
 from fastapi import APIRouter, HTTPException
 
 from app.routers.audio_http import wav_response
