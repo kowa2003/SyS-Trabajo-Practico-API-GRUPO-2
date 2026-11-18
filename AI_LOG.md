@@ -296,3 +296,27 @@ La herramienta también brindó asistencia para corregir advertencias del linter
 **Evaluación:**
 
 La asistencia permitió completar la implementación y comprender las diferencias entre ambos métodos. Los resultados fueron comprobados mediante pruebas locales, sin asumir que el código generado era correcto únicamente por provenir de IA.
+
+#### Entrada: Generación del codigo del servicio que calcula la integral de Schroeder
+
+* IA UTILIZADA: Gemini
+
+* **Consulta realizada (Prompt):**
+  > para la aplicacion que venimos desarrollando de respuesta al impulso, tengo que hacer la funcion de la integral de schroeder en fastapi (servicio, schema y router) siguiendo estas especificaciones de la guia (adjunte imagenes de las especificaciones y formulas de la web de guia)
+
+* **Resultado obtenido:**
+  * Se implementó `apply_schroeder_integral` en `app/services/acoustic_parameters.py` realizando la integración acumulativa inversa (`np.cumsum`) sobre la respuesta al impulso al cuadrado, junto con el esquema Pydantic (`SchroederResponse`) y el endpoint `POST /api/v1/utils/schroeder` con decimación de datos (~1 muestra/ms) para optimizar el tamaño del JSON.
+
+  * Se resolvieron las advertencias de `ruff` (como el uso de `Annotated` para parámetros `File` en FastAPI) y se aislaron los cambios en la rama para no pisar la función previa de suavizado.
+
+  * Tras el feedback del reviewer en el PR, se corrigió el orden de normalización: primero se calcula el ratio adimensional respecto a la energía total inicial, se validan señales silenciosas o sin energía, y se aplica `np.clip` fijando un piso seguro en `-150 dB` antes de pasar a decibelios. Se validó el comportamiento con `uv run pytest` y se subió la actualización al Pull Request.
+
+* **Evaluación y aprendizaje:**
+
+  * Suavizado físico para ISO 3382: La integración acumulada elimina las oscilaciones de fase de la energía instantánea, convirtiéndola en una curva monótona y decreciente apta para trazar regresiones lineales (EDT, T20 y T30).
+
+  * El intercambio en el *Code Review* permitió detectar que aplicar un épsilon absoluto de máquina (`np.finfo(float).eps`) sobre la energía cruda antes de normalizar podía alterar señales de baja amplitud y generar valores positivos en dB, algo físicamente imposible en una EDC que debe arrancar en `0 dB` y solo decrecer.
+
+  * Normalizar primero y acotar el ratio con un piso dinámico relativo de `-150 dB` resolvió tanto la estabilidad numérica como la protección contra ceros en el logaritmo, demostrando la importancia de combinar criterio físico y revisión entre pares antes de mergear.
+
+---
