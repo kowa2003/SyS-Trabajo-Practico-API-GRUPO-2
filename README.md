@@ -400,12 +400,12 @@ endpoint devuelve HTTP 422.
 
 ### M3 · Producto final (`v1.0.0`)
 
-- [ ] `apply_smoothing()`, `apply_schroeder_integral()`, `linear_regression()` y
+- [x] `apply_smoothing()`, `apply_schroeder_integral()`, `linear_regression()` y
       `calculate_parameters_from_ir()` en `app/services/acoustic_parameters.py`.
-- [ ] Endpoints `POST /api/v1/acoustics/parameters`, `POST /api/v1/utils/schroeder` y
+- [x] Endpoints `POST /api/v1/acoustics/parameters`, `POST /api/v1/utils/schroeder` y
       `POST /api/v1/utils/smoothing`: la API completa.
-- [ ] Tests de `tests/test_analisis.py` y todos los de `tests/test_api.py` pasando.
-- [ ] Seccion "Validacion" en este README, `AI_LOG.md` y presentacion oral.
+- [x] Tests de `tests/test_analisis.py` y todos los de `tests/test_api.py` pasando.
+- [x] Seccion "Validacion" en este README, `AI_LOG.md` y presentacion oral.
 - [ ] (Opcional) `apply_lundeby()`.
 
 ## Validacion M1
