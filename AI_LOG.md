@@ -290,6 +290,143 @@ Esta interacción permitió comprender mejor la relación entre el tamaño de la
   > *"Escribir un script en Python (`scripts/validate_m2.py`) que tome las RIs reales en formato `.wav` (`h042_Hallway_ElementarySchool_4txts.wav` y `h045_Livingroom_4txts.wav`) ubicadas en `docs/m2/`, las procese en las 6 bandas de octava normalizadas (125 Hz, 250 Hz, 500 Hz, 1 kHz, 2 kHz y 4 kHz) usando `filter_single_band` y `logarithmic_scale_conversion`, y guarde las gráficas comparativas en `docs/m2/`."*
 * **Resultado obtenido:**
   * Código modular completo del script ejecutado como módulo (`uv run python -m scripts.validate_m2`) para evitar errores de importación
+  
+```python  
+  import sys
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 1. Asegurar importación de servicios del proyecto
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from app.services.filter import filter_single_band
+from app.services.signal_utils import load_audio, logarithmic_scale_conversion
+
+# 2. Definir rutas y configuración
+m2_dir = Path("docs/m2")
+
+# Archivos WAV a procesar
+files_to_process = [
+    "h042_Hallway_ElementarySchool_4txts.wav",
+    "h045_Livingroom_4txts.wav",
+]
+
+# Bandas de octava normalizadas (ISO/IEC 61260)
+center_frequencies = [125, 250, 500, 1000, 2000, 4000]
+
+for file_name in files_to_process:
+    audio_path = m2_dir / file_name
+
+    if not audio_path.exists():
+        print(f"⚠️ Archivo no encontrado: {audio_path}. Omitiendo...")
+        continue
+
+    print(f"\nProcesando {audio_path.name} en 6 bandas de octava...")
+
+    # Cargar y normalizar audio
+    signal, fs = load_audio(audio_path)
+    time = np.arange(len(signal)) / fs
+
+    # ---------------------------------------------------------
+    # 1. Forma de onda de la respuesta impulsional original
+    # ---------------------------------------------------------
+    plt.figure(figsize=(12, 4))
+    plt.plot(time, signal, linewidth=0.7)
+
+    plt.title(f"Forma de onda - {audio_path.stem}")
+    plt.xlabel("Tiempo [s]")
+    plt.ylabel("Amplitud")
+    plt.grid(True, linestyle="--", alpha=0.6)
+
+    plt.tight_layout()
+
+    output_waveform = m2_dir / f"forma_onda_{audio_path.stem}.png"
+    plt.savefig(output_waveform, dpi=300)
+    plt.close()
+
+    print(f"Forma de onda guardada en: {output_waveform}")
+
+    # ---------------------------------------------------------
+    # 2. Espectro de magnitud de la respuesta impulsional
+    # ---------------------------------------------------------
+    N = len(signal)
+
+    # Transformada de Fourier de la RI completa, sin aplicar ventana.
+    spectrum = np.abs(np.fft.rfft(signal))
+
+    # Escala de amplitud de un solo lado.
+    spectrum = spectrum / N
+    spectrum[1:-1] *= 2
+
+    frequencies = np.fft.rfftfreq(N, d=1 / fs)
+
+    # Expresar el espectro en dB, referido a su máximo
+    spectrum_db = 20 * np.log10(np.maximum(spectrum / np.max(spectrum), 1e-6))
+
+    # Diagnóstico del contenido espectral
+    for freq in [8000, 10000, 12000, 14000, 16000]:
+        idx = np.argmin(np.abs(frequencies - freq))
+        print(f"{freq} Hz: {spectrum_db[idx]:.2f} dB")
+
+    plt.figure(figsize=(12, 4))
+    plt.plot(frequencies, spectrum_db, linewidth=0.8)
+
+    plt.title(f"Espectro de magnitud - {audio_path.stem}")
+    plt.xlabel("Frecuencia [Hz]")
+    plt.ylabel("Magnitud relativa [dB]")
+    plt.xlim(0, fs / 2)
+    plt.ylim(-120, 5)
+    plt.grid(True, linestyle="--", alpha=0.6)
+
+    plt.tight_layout()
+
+    output_spectrum = m2_dir / f"espectro_{audio_path.stem}.png"
+    plt.savefig(output_spectrum, dpi=300)
+    plt.close()
+
+    print(f"Espectro guardado en: {output_spectrum}")
+
+    # Crear figura de 6 filas (una por cada banda)
+    fig, axes = plt.subplots(len(center_frequencies), 1, figsize=(12, 14), sharex=True)
+    fig.suptitle(
+        f"Validación Acústica Multi-banda (M2): {audio_path.stem}",
+        fontsize=14,
+        fontweight="bold",
+    )
+
+    for i, fc in enumerate(center_frequencies):
+        # A. Filtrar en la banda especificada
+        filtered = filter_single_band(signal, fs, center_freq=float(fc), order=4)
+
+        # B. Convertir a escala logarítmica (dB)
+        log_signal = logarithmic_scale_conversion(filtered)
+
+        # C. Graficar la curva de decaimiento en el panel correspondiente
+        ax = axes[i]
+        ax.plot(time, log_signal, label=f"{fc} Hz", color=f"C{i}")
+        ax.set_ylabel("Nivel [dB]")
+        ax.set_ylim([-80, 5])
+        ax.grid(True, linestyle="--", alpha=0.6)
+        ax.legend(loc="upper right")
+
+    axes[-1].set_xlabel("Tiempo [s]")
+    plt.tight_layout()
+
+    # Guardar imagen con el análisis multi-banda
+    output_png = m2_dir / f"val_multiband_{audio_path.stem}.png"
+    plt.savefig(output_png, dpi=300)
+    plt.close()
+
+    floor_count = np.sum(spectrum_db <= -119.99)
+
+    print(f"Muestras en el piso de -120 dB: {floor_count}/{len(spectrum_db)}")
+
+    print(f"✓ Gráfica multi-banda guardada exitosamente en: {output_png}")
+```
+
+
   * Generación automática de los archivos `val_multiband_h042_Hallway_ElementarySchool_4txts.png` y `val_multiband_h045_Livingroom_4txts.png`
 * **Evaluación y aprendizaje:**
   * Se automatizó la creación de evidencias gráficas requeridas por la cátedra para todas las octavas de la norma IEC 61260 en un solo paso.
@@ -511,3 +648,48 @@ La comparación con REW permitió identificar aspectos que requieren validación
   * Normalizar primero y acotar el ratio con un piso dinámico relativo de `-150 dB` resolvió tanto la estabilidad numérica como la protección contra ceros en el logaritmo, demostrando la importancia de combinar criterio físico y revisión entre pares antes de mergear.
 
 ---
+
+### Correciones finales M3
+
+* **Fecha:** 18/11/2026 - M3
+* **IA Utilizada:** GEMINI 
+* **Integrante:** Mauro Zampietri
+* **Objetivo:** Docstring para validate_m2.py para ordenar
+* **Prompt:** Haceme el docstring para validate_m2.py
+* **Respuesta:**
+
+```python
+"""Script de validación acústica y análisis espectral para el Milestone 2 (M2).
+
+Procesa respuestas al impulso (RIs) reales en formato WAV ubicadas en ``docs/m2/``
+utilizando los servicios de procesamiento de señales del proyecto, y genera tres
+gráficas de diagnóstico por cada archivo analizado:
+
+1. **Forma de onda**: señal temporal normalizada de la RI original.
+2. **Espectro de magnitud**: transformada rápida de Fourier (rFFT) de un solo lado
+   expresada en decibeles relativos al pico máximo (0 dB), incluyendo un diagnóstico
+   por consola del contenido energético en altas frecuencias (8 kHz a 16 kHz) y
+   el conteo de muestras en el piso de -120 dB.
+3. **Curvas de decaimiento multi-banda**: filtrado por bandas de octava normalizadas
+   según IEC 61260 (125 Hz, 250 Hz, 500 Hz, 1 kHz, 2 kHz y 4 kHz) mediante filtros
+   Butterworth de fase cero y conversión a escala logarítmica en dB.
+
+Outputs
+-------
+docs/m2/forma_onda_<nombre_archivo>.png
+    Gráfica de amplitud vs. tiempo de la respuesta al impulso original.
+docs/m2/espectro_<nombre_archivo>.png
+    Gráfica del espectro de magnitud relativa [dB] vs. frecuencia [Hz].
+docs/m2/val_multiband_<nombre_archivo>.png
+    Figura de 6 paneles con las curvas de decaimiento en dB para cada banda de octava.
+
+Notes
+-----
+El script debe ejecutarse desde la raíz del repositorio para resolver correctamente
+las importaciones internas de ``app.services``:
+
+    $ uv run python -m scripts.validate_m2
+"""
+```
+* **Evaluación:** Completamente útil, ya que hizo una revisión rápida y se continuó con las tareas sin perder tiempo en algo que, si bien es útil para el ordenamiento, no afecta el funcionamiento de la API. 
+
