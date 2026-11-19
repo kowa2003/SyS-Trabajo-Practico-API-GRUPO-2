@@ -400,12 +400,12 @@ endpoint devuelve HTTP 422.
 
 ### M3 · Producto final (`v1.0.0`)
 
-- [ ] `apply_smoothing()`, `apply_schroeder_integral()`, `linear_regression()` y
+- [x] `apply_smoothing()`, `apply_schroeder_integral()`, `linear_regression()` y
       `calculate_parameters_from_ir()` en `app/services/acoustic_parameters.py`.
-- [ ] Endpoints `POST /api/v1/acoustics/parameters`, `POST /api/v1/utils/schroeder` y
+- [x] Endpoints `POST /api/v1/acoustics/parameters`, `POST /api/v1/utils/schroeder` y
       `POST /api/v1/utils/smoothing`: la API completa.
-- [ ] Tests de `tests/test_analisis.py` y todos los de `tests/test_api.py` pasando.
-- [ ] Seccion "Validacion" en este README, `AI_LOG.md` y presentacion oral.
+- [x] Tests de `tests/test_analisis.py` y todos los de `tests/test_api.py` pasando.
+- [x] Seccion "Validacion" en este README, `AI_LOG.md` y presentacion oral.
 - [ ] (Opcional) `apply_lundeby()`.
 
 ## Validacion M1
@@ -463,11 +463,14 @@ y un canal, correspondiente a 5 segundos de grabación a 44100 Hz.
 
 ## Validación Acústica y Procesamiento Multi-banda (Milestone 2)
 
-Para la validación del pipeline del Milestone 2, se procesaron dos respuestas al impulso (RIs) de recintos reales pertenecientes al catálogo **OpenAIR**:
+Para la validación del pipeline del Milestone 2, se procesaron dos respuestas al impulso (RIs) de recintos reales pertenecientes al **MIT IR Survey** (MIT McDermott Lab):
 1. **Hallway Elementary School** (`h042_Hallway_ElementarySchool_4txts.wav`): Recinto reverberante con $T_{60}$ largo.
 2. **Livingroom** (`h045_Livingroom_4txts.wav`): Recinto pequeño y absorbente con $T_{60}$ corto.
 
-Ambas RIs fueron procesadas a través del módulo de filtrado por octava (`filter_single_band`) y conversión logarítmica (`logarithmic_scale_conversion`) en las seis frecuencias centrales normalizadas según IEC 61260 ($125, 250, 500, 1000, 2000\text{ y }4000\text{ Hz}$). Los resultados se contrastaron visual y cuantitativamente con los parámetros ISO 3882 reportados por el software de referencia comercial **REW (Room EQ Wizard)**.
+- **Página del MIT IR Survey:** https://mcdermottlab.mit.edu/Reverb/IR_Survey.html
+- **Descarga de los archivos de audio:** https://mcdermottlab.mit.edu/Reverb/IRMAudio/Audio.zip
+
+Ambas RIs fueron procesadas mediante el módulo de filtrado por octava (`filter_single_band`) y conversión logarítmica (`logarithmic_scale_conversion`) en las seis frecuencias centrales normalizadas según IEC 61260 ($125, 250, 500, 1000, 2000\text{ y }4000\text{ Hz}$). Se generaron representaciones temporales, espectrales y multibanda para inspeccionar las señales procesadas. Además, se incluyen mediciones obtenidas con el software de referencia **REW (Room EQ Wizard)**, basadas en parámetros acústicos de referencia de la norma ISO 3382.
 
 ---
 
@@ -507,62 +510,380 @@ Ambas RIs fueron procesadas a través del módulo de filtrado por octava (`filte
 
 ### 2. Análisis Visual y Gráficos de Validación
 
-#### A. Hallway Elementary School (Recinto Reverberante)
+Se generaron tres tipos de gráficos para cada respuesta al impulso:
 
-**Curvas de decaimiento logarítmico en 6 bandas (RIR-API)**  
+- **Forma de onda:** representa la amplitud de la señal en función del tiempo.
+- **Espectro de magnitud:** permite observar cómo se distribuye el contenido espectral de la RI. Se calcula mediante la FFT de la señal completa, sin aplicar una ventana temporal, y se representa en decibeles a partir de una magnitud normalizada.
+- **Procesamiento multibanda:** muestra la evolución temporal de las señales filtradas en las seis bandas de octava, expresada en escala logarítmica.
+
+#### A. Hallway Elementary School (h042)
+
+**Forma de onda**
+
+`docs/m2/forma_onda_h042_Hallway_ElementarySchool_4txts.png`
+
+![Forma de onda h042](docs/m2/forma_onda_h042_Hallway_ElementarySchool_4txts.png)
+
+La representación temporal permite observar la señal original y su evolución a lo largo de la duración de la respuesta al impulso.
+
+**Espectro de magnitud**
+
+`docs/m2/espectro_h042_Hallway_ElementarySchool_4txts.png`
+
+![Espectro h042](docs/m2/espectro_h042_Hallway_ElementarySchool_4txts.png)
+
+El espectro muestra la distribución de magnitud en frecuencia hasta la frecuencia de Nyquist (16 kHz). Se observa una disminución de la magnitud hacia las frecuencias altas.
+
+**Procesamiento multibanda**
+
 `docs/m2/val_multiband_h042_Hallway_ElementarySchool_4txts.png`
 
-![Validación Multi-banda RIR-API - Hallway](docs/m2/val_multiband_h042_Hallway_ElementarySchool_4txts.png)
+![Validación multibanda h042](docs/m2/val_multiband_h042_Hallway_ElementarySchool_4txts.png)
 
-* **Análisis RIR-API:** La figura muestra las curvas de decaimiento en escala logarítmica (dB) en función del tiempo para las 6 octavas filtradas. En frecuencias medias ($250\text{ Hz} - 1000\text{ Hz}$), la energía decae linealmente en dB desde $0\text{ dB}$ hasta $-60\text{ dB}$ cerca de los $2,25\text{ segundos}$. En la octava de $4000\text{ Hz}$, la pendiente es marcadamente más pronunciada debido a la absorción atmosférica y superficial de las altas frecuencias, alcanzando el piso de ruido a los $\sim 1,15\text{ segundos}$.
+El gráfico permite comparar la evolución temporal de las señales filtradas en las seis bandas centrales. Las diferencias entre las trazas permiten inspeccionar el comportamiento de la respuesta al impulso según la frecuencia.
 
----
+**Referencia externa REW**
 
-**Respuesta en frecuencia de T20 y T30 (REW)**  
 `docs/m2/Hallway_ElementarySc_RT60_REW.png`
 
-![Análisis RT60 REW - Hallway](docs/m2/Hallway_ElementarySc_RT60_REW.png)
+![Análisis RT60 REW h042](docs/m2/Hallway_ElementarySc_RT60_REW.png)
 
-* **Análisis REW:** El gráfico de referencia comercial muestra la meseta característica de recintos grandes: el tiempo de reverberación se mantiene elevado y plano entre $250\text{ Hz}$ y $1000\text{ Hz}$ ($T_{30} \approx 2,25\text{ s}$ - $2,27\text{ s}$), decayendo suavemente en $2000\text{ Hz}$ ($1,95\text{ s}$) y fuertemente en $4000\text{ Hz}$ ($1,15\text{ s}$). La tasa de caída en dB obtenida por nuestra función en Python se amolda perfectamente a la respuesta espectral reportada por REW.
+El gráfico presenta los valores de T20 y T30 obtenidos mediante REW. Se conserva como referencia externa para futuras comparaciones.
 
 ---
 
-#### B. Livingroom (Recinto Absorbente)
+#### B. Livingroom (h045)
 
-**Curvas de decaimiento logarítmico en 6 bandas (RIR-API)**  
+**Forma de onda**
+
+`docs/m2/forma_onda_h045_Livingroom_4txts.png`
+
+![Forma de onda h045](docs/m2/forma_onda_h045_Livingroom_4txts.png)
+
+La representación temporal permite observar la señal original y su evolución a lo largo de la duración de la respuesta al impulso.
+
+**Espectro de magnitud**
+
+`docs/m2/espectro_h045_Livingroom_4txts.png`
+
+![Espectro h045](docs/m2/espectro_h045_Livingroom_4txts.png)
+
+El espectro muestra la distribución de magnitud en frecuencia hasta la frecuencia de Nyquist (16 kHz). Se observa una disminución de la magnitud hacia las frecuencias altas.
+
+**Procesamiento multibanda**
+
 `docs/m2/val_multiband_h045_Livingroom_4txts.png`
 
-![Validación Multi-banda RIR-API - Livingroom](docs/m2/val_multiband_h045_Livingroom_4txts.png)
+![Validación multibanda h045](docs/m2/val_multiband_h045_Livingroom_4txts.png)
 
-* **Análisis RIR-API:** En esta sala de menor volumen, el decaimiento de la energía es significativamente más veloz. La escala en dB evidencia la caída completa hacia el piso de ruido ($\sim -80\text{ dB}$) en aproximadamente $0,6\text{ segundos}$ para las frecuencias centrales ($500\text{ Hz} - 2000\text{ Hz}$), y aun más rápido en $125\text{ Hz}$ ($\sim 0,4\text{ s}$). La señal filtrada conserva la resolución temporal adecuada sin distorsión de fase previa gracias al filtrado `sosfiltfilt`.
+El gráfico permite comparar la evolución temporal de las señales filtradas en las seis bandas centrales. Se pueden observar las diferencias de comportamiento entre las bandas de frecuencia.
 
----
+**Referencia externa REW**
 
-**Respuesta en frecuencia de T20 y T30 (REW)**  
 `docs/m2/h045_Livingroom_4txts_RT60_REW.png`
 
-![Análisis RT60 REW - Livingroom](docs/m2/h045_Livingroom_4txts_RT60_REW.png)
+![Análisis RT60 REW h045](docs/m2/h045_Livingroom_4txts_RT60_REW.png)
 
-* **Análisis REW:** La curva de REW confirma un perfil acústico típico de habitación residencial: un tiempo de reverberación muy bajo en graves ($125\text{ Hz} \to T_{30} = 0,403\text{ s}$), que asciende ligeramente y se estabiliza alrededor de $0,60\text{ s} - 0,65\text{ s}$ entre $500\text{ Hz}$ y $2000\text{ Hz}$. La velocidad de decaimiento observada en las trazas de nuestro procesador confirma un ajuste preciso en todas las bandas de frecuencia evaluadas.
+El gráfico presenta los valores de T20 y T30 obtenidos mediante REW. Se conserva como referencia externa para futuras comparaciones.
 
 ---
 
-### 3. Resumen Comparativo de Validación
+### 3. Validación de recuperación de una RI sintética
 
-| Recinto | Banda (Hz) | Tiempo de Decaimiento Visual (RIR-API a -60 dB) | $T_{30}$ REW (Referencia) | Estado de Validación |
-| :--- | :---: | :---: | :---: | :---: |
-| **Hallway** | 125 | ~ 1,7 s | 1,708 s | Coincide |
-| **Hallway** | 250 | ~ 2,25 s | 2,274 s | Coincide |
-| **Hallway** | 500 | ~ 2,23 s | 2,237 s | Coincide |
-| **Hallway** | 1000 | ~ 2,25 s | 2,252 s | Coincide |
-| **Hallway** | 2000 | ~ 1,95 s | 1,945 s | Coincide |
-| **Hallway** | 4000 | ~ 1,15 s | 1,147 s | Coincide |
-| **Livingroom** | 125 | ~ 0,40 s | 0,403 s | Coincide |
-| **Livingroom** | 250 | ~ 0,55 s | 0,546 s | Coincide |
-| **Livingroom** | 500 | ~ 0,62 s | 0,623 s | Coincide |
-| **Livingroom** | 1000 | ~ 0,61 s | 0,613 s | Coincide |
-| **Livingroom** | 2000 | ~ 0,65 s | 0,655 s | Coincide |
-| **Livingroom** | 4000 | ~ 0,55 s | 0,554 s | Coincide |
+Se verificó el procedimiento de recuperación de respuestas al impulso mediante una prueba con una RI sintética conocida. Esta prueba está implementada en `tests/test_procesamiento.py`, en la función `test_impulse_response_peak()`.
+
+El procedimiento consiste en:
+
+1. Generar una RI sintética de 0,5 segundos, compuesta por un impulso directo y una cola exponencial, filtrada entre 100 Hz y 10 kHz.
+2. Generar un *sine sweep* de 2 segundos, con frecuencias comprendidas entre 20 Hz y 20 kHz, junto con su filtro inverso.
+3. Simular una grabación mediante la convolución del sweep con la RI original.
+4. Recuperar la respuesta al impulso mediante `get_impulse_response()`, utilizando la grabación simulada y el filtro inverso.
+5. Alinear la RI recuperada con la original mediante correlación cruzada y comparar el tramo superpuesto.
+
+**Criterio de aceptación:** el valor absoluto del coeficiente de correlación entre ambas señales debe ser superior a 0,9.
+
+**Resultado de la ejecución:**
+
+```text
+uv run pytest tests/test_procesamiento.py::test_impulse_response_peak -v
+
+1 passed in 1.48s
+```
+
+La prueba verifica que el procedimiento de deconvolución permite recuperar una respuesta al impulso suficientemente similar a la original, considerando la alineación temporal.
+
+#### Validación del decaimiento de una RI sintética
+
+También se verificó que el procedimiento de generación de respuestas al impulso sintéticas produzca un decaimiento compatible con el tiempo de reverberación especificado. Esta prueba está implementada en `tests/test_procesamiento.py`, en la función `test_synthetic_ir_decay()`.
+
+El procedimiento consiste en:
+
+1. Generar una RI sintética de 6 segundos, con una frecuencia de muestreo de 44.100 Hz y un T60 esperado de 2 segundos en la banda de 1 kHz.
+2. Filtrar la señal en la banda de octava centrada en 1 kHz.
+3. Obtener la curva de decaimiento mediante el método de Schroeder.
+4. Estimar el T60 a partir de dicha curva y compararlo con el valor esperado.
+
+**Criterio de aceptación:** el T60 medido debe diferir como máximo un 10 % del valor esperado de 2 segundos, por lo que debe encontrarse entre 1,8 y 2,2 segundos.
+
+**Resultado de la ejecución:**
+
+```text
+uv run pytest tests/test_procesamiento.py::TestGenerateSyntheticIR::test_synthetic_ir_decay -v
+
+1 passed in 1.54s
+```
+
+La prueba confirma que la RI sintética presenta un decaimiento compatible con el T60 configurado, dentro de la tolerancia establecida.
+
+### 4. Validación con la API de referencia de la cátedra
+
+Para validar las respuestas al impulso utilizadas en M2, se enviaron los archivos `h042_Hallway_ElementarySchool_4txts.wav` y `h045_Livingroom_4txts.wav` a la API de referencia de la cátedra, mediante el endpoint:
+
+`POST /api/v1/acoustics/parameters/bands`
+
+La solicitud se realizó utilizando el campo multipart/form-data `file`, enviando cada archivo WAV por separado. Las respuestas completas del servicio se conservaron en formato JSON:
+
+- `docs/m2/referencia_h042.json`
+- `docs/m2/referencia_h045.json`
+
+Cada respuesta incluye información del archivo procesado, la configuración del análisis, las frecuencias centrales evaluadas y los parámetros acústicos calculados por banda: $T_{30}$, $T_{20}$, $T_{10}$ y EDT.
+
+A continuación, se resumen los valores de $T_{30}$ devueltos por la API de referencia para las seis frecuencias centrales utilizadas en nuestro análisis M2:
+
+| Frecuencia (Hz) | h042 - Hallway (s) | h045 - Livingroom (s) |
+| :---: | :---: | :---: |
+| 125 | 1,566 | 0,364 |
+| 250 | 2,042 | 0,492 |
+| 500 | 1,990 | 0,554 |
+| 1000 | 2,039 | 0,531 |
+| 2000 | 1,723 | 0,535 |
+| 4000 | 0,886 | 0,438 |
+
+**Alcance de esta validación:** estos valores corresponden a las respuestas obtenidas del servicio de referencia de la cátedra. Los archivos JSON conservan los resultados completos para cada frecuencia. Esta documentación no implica que nuestra implementación local ya reproduzca dichos valores; la comparación numérica entre ambos servicios requiere evaluar las respuestas de nuestra propia API.
+
+### 5. Valores de Referencia para la Validación
+
+Se presentan los tiempos de reverberación $T_{30}$ obtenidos mediante REW para las respuestas al impulso de los recintos *Hallway* y *Livingroom*.
+
+Estos valores se utilizan como referencia externa para la validación del sistema. En M2 se realizó un análisis gráfico del decaimiento energético por bandas de octava, pero todavía no se implementó el cálculo numérico de los tiempos de reverberación mediante la integral de Schroeder.
+
+| Recinto | Banda (Hz) | $T_{30}$ REW (Referencia) |
+| :--- | :---: | :---: |
+| **Hallway** | 125 | 1,708 s |
+| **Hallway** | 250 | 2,274 s |
+| **Hallway** | 500 | 2,237 s |
+| **Hallway** | 1000 | 2,252 s |
+| **Hallway** | 2000 | 1,945 s |
+| **Hallway** | 4000 | 1,147 s |
+| **Livingroom** | 125 | 0,403 s |
+| **Livingroom** | 250 | 0,546 s |
+| **Livingroom** | 500 | 0,623 s |
+| **Livingroom** | 1000 | 0,613 s |
+| **Livingroom** | 2000 | 0,655 s |
+| **Livingroom** | 4000 | 0,554 s |
+
+**Alcance de la validación:** Los valores de esta tabla corresponden exclusivamente a REW y no representan resultados calculados por nuestra API.
+
+La comparación numérica entre ambos sistemas se realizará en M3, mediante la implementación de la integral de Schroeder, el cálculo de los parámetros acústicos y su contrastación con los resultados de referencia.
+
+## Validación M3 · Parámetros acústicos por banda
+
+### Objetivo y alcance
+
+La validación del **Milestone 3 (M3)** tiene como objetivo verificar el funcionamiento de la cadena completa de procesamiento acústico desarrollada en **RIR-API**, integrando las funcionalidades implementadas durante M1, M2 y M3.
+
+El procedimiento comprende la carga de respuestas al impulso (RI), el filtrado en bandas de octava, la aplicación de la **integral de Schroeder** y el análisis del decaimiento energético mediante regresión lineal, permitiendo estimar los parámetros acústicos **EDT, T10, T20, T30, D50 y C80**, siguiendo los métodos establecidos en la norma **ISO 3382-1**.
+
+Para garantizar la reproducibilidad de los resultados, las mediciones se realizaron a través del endpoint `POST /api/v1/acoustics/parameters`, utilizando `TestClient` de FastAPI. La ejecución de las pruebas, la comparación con los valores de referencia y la generación de las evidencias gráficas se encuentran automatizadas mediante el script [`docs/m3/validar_m3.py`](docs/m3/validar_m3.py).
+
+### Señales y método
+
+Se reutilizaron dos RI del MIT IR Survey
+(<https://mcdermottlab.mit.edu/Reverb/IR_Survey.html>),
+ya utilizadas en M2, sin modificar sus muestras originales:
+
+- **Hallway Elementary School (h042):**
+  `docs/m2/h042_Hallway_ElementarySchool_4txts.wav`,
+  32000 Hz y aproximadamente 1,994 s.
+- **Livingroom (h045):** `docs/m2/h045_Livingroom_4txts.wav`,
+  32000 Hz y aproximadamente 0,675 s.
+- **Sintética:** `generate_synthetic_ir(duration=5, fs=44100)`, con T60 configurado
+  por banda en `docs/m3/validar_m3.py` (semilla fija en el generador).
+
+Cada RI se analiza en 125, 250, 500, 1000, 2000 y 4000 Hz.
+Los intervalos de regresión de la curva de Schroeder son EDT: 0 a −10 dB,
+T10: −5 a −15 dB, T20: −5 a −25 dB y T30: −5 a −35 dB;
+el tiempo se extrapola mediante `−60 / pendiente`.
+Los resultados dependen de la referencia temporal elegida para el sonido directo,
+del filtrado, del ruido de fondo y de la linealidad del decaimiento.
+
+Los valores de REW son las **tablas A y B transcritas en el README de M2**.
+No se utilizaron los archivos `referencia_h042.json` y `referencia_h045.json` de M2
+como referencias REW: esos pertenecen a la API de la cátedra.
+
+### Criterios de evaluación
+
+EDT, T20 y T30: tolerancia de `min(10 % × |valor REW|, 0,5 s)`.
+C80: diferencia absoluta máxima de 1 dB. Las mediciones `None` cuentan como
+**no calculadas**, no como aciertos. D50 se informa frente a REW, pero sin
+veredicto de tolerancia porque la consigna no especifica un umbral para D50.
+T10 se calcula y exporta a JSON, pero no tiene referencia REW en estas tablas.
+
+### 1. Validación con RI sintética
+
+Se analizaron tiempos de reverberación conocidos por banda (segundos):
+
+| Banda (Hz) | T60 configurado | EDT API | T20 API | T30 API |
+|---:|---:|---:|---:|---:|
+| 125 | 2.000 | 1.879 | 1.934 | 2.033 |
+| 250 | 1.800 | 1.679 | 1.759 | 1.776 |
+| 500 | 1.500 | 1.602 | 1.575 | 1.568 |
+| 1000 | 1.200 | 1.059 | 1.281 | 1.253 |
+| 2000 | 1.000 | 0.994 | 1.022 | 1.019 |
+| 4000 | 0.800 | 0.834 | 0.805 | 0.811 |
+
+La RI sintética permite comprobar la recuperación de T20 y T30 frente a un
+tiempo configurado; EDT puede diferir por la estructura del decaimiento inicial.
+
+![RI sintética: T60 conocido](docs/m3/sintetica_t60_conocido.png)
+
+### 2. Hallway (h042) — resultados por banda
+
+| Parámetro / banda (Hz) | 125 | 250 | 500 | 1000 | 2000 | 4000 |
+|---|---:|---:|---:|---:|---:|---:|
+| EDT (s) · RIR-API | 1.502 | 1.859 | 1.222 | 1.207 | 0.964 | 0.099 |
+| EDT (s) · REW | 1.400 | 1.523 | 1.204 | 1.186 | 0.904 | 0.087 |
+| T20 (s) · RIR-API | 1.589 | 2.219 | 2.172 | 2.178 | 1.826 | 1.011 |
+| T20 (s) · REW | 1.648 | 2.236 | 2.205 | 2.177 | 1.821 | 1.043 |
+| T30 (s) · RIR-API | 1.662 | 2.291 | 2.202 | 2.253 | 1.953 | 1.103 |
+| T30 (s) · REW | 1.708 | 2.274 | 2.237 | 2.252 | 1.945 | 1.147 |
+| C80 (dB) · RIR-API | 6.939 | 7.332 | 7.088 | 5.943 | 7.170 | 16.588 |
+| C80 (dB) · REW | 6.900 | 7.720 | 7.400 | 6.480 | 8.890 | 16.620 |
+| D50 (%) · RIR-API | 68.126 | 81.459 | 76.572 | 71.680 | 76.762 | 96.554 |
+| D50 (%) · REW | 68.500 | 82.100 | 78.100 | 74.300 | 83.300 | 96.600 |
+
+**Resultado:** 21/24 comparaciones dentro de tolerancia; 3 fuera y 0 `None`.
+
+| Parámetro | Dentro de tolerancia | Fuera | None |
+|---|---:|---:|---:|
+| EDT | 4/6 | 2 | 0 |
+| T20 | 6/6 | 0 | 0 |
+| T30 | 6/6 | 0 | 0 |
+| C80 | 5/6 | 1 | 0 |
+
+#### Curva de Schroeder y regresiones (1000 Hz)
+
+![Schroeder y ajustes Hallway](docs/m3/h042_01_schroeder_regresiones.png)
+
+El gráfico muestra la curva de energía integrada y las rectas reconstruidas
+con los tiempos informados por el endpoint. **La detección de inicio y la
+normalización usadas para dibujar la figura son una reconstrucción diagnóstica**
+de la variante experimental (umbral del 10 %); la respuesta JSON del endpoint
+es la fuente de verdad para las tablas y el cumplimiento.
+
+#### Comparación de filtros por bandas
+
+![Filtros por bandas Hallway](docs/m3/h042_02_comparacion_filtros.png)
+
+Se muestra la respuesta en frecuencia de filtros Butterworth y la envolvente
+de Hilbert de las seis bandas de octava. La envolvente es descriptiva,
+no se usa para sustituir la energía cuadrática de Schroeder.
+
+#### Comparación RIR-API vs. REW
+
+![Comparación contra REW Hallway](docs/m3/h042_03_validacion_rew.png)
+
+La franja sombreada indica tolerancia según la consigna; las cruces
+rojas señalan mediciones fuera del intervalo de aceptación.
+
+Tabla detallada de las 24 comparaciones: [`docs/m3/h042_comparacion_detallada.md`](docs/m3/h042_comparacion_detallada.md).
+
+### 2. Livingroom (h045) — resultados por banda
+
+| Parámetro / banda (Hz) | 125 | 250 | 500 | 1000 | 2000 | 4000 |
+|---|---:|---:|---:|---:|---:|---:|
+| EDT (s) · RIR-API | 0.182 | 0.475 | 0.137 | 0.196 | 0.004 | 0.009 |
+| EDT (s) · REW | 0.242 | 0.331 | 0.109 | 0.120 | 0.007 | 0.008 |
+| T20 (s) · RIR-API | 0.398 | 0.552 | 0.666 | 0.600 | 0.674 | 0.527 |
+| T20 (s) · REW | 0.395 | 0.551 | 0.645 | 0.606 | 0.669 | 0.530 |
+| T30 (s) · RIR-API | 0.393 | 0.538 | 0.637 | 0.614 | 0.659 | 0.547 |
+| T30 (s) · REW | 0.403 | 0.546 | 0.623 | 0.613 | 0.655 | 0.554 |
+| C80 (dB) · RIR-API | 11.734 | 13.699 | 13.705 | 14.905 | 16.999 | 20.081 |
+| C80 (dB) · REW | 14.280 | 16.410 | 15.370 | 15.990 | 18.530 | 20.970 |
+| D50 (%) · RIR-API | 88.478 | 92.265 | 93.242 | 93.905 | 96.445 | 97.793 |
+| D50 (%) · REW | 92.800 | 95.700 | 95.500 | 95.400 | 97.500 | 98.200 |
+
+**Resultado:** 13/24 comparaciones dentro de tolerancia; 11 fuera y 0 `None`.
+
+| Parámetro | Dentro de tolerancia | Fuera | None |
+|---|---:|---:|---:|
+| EDT | 0/6 | 6 | 0 |
+| T20 | 6/6 | 0 | 0 |
+| T30 | 6/6 | 0 | 0 |
+| C80 | 1/6 | 5 | 0 |
+
+#### Curva de Schroeder y regresiones (1000 Hz)
+
+![Schroeder y ajustes Livingroom](docs/m3/h045_01_schroeder_regresiones.png)
+
+El gráfico muestra la curva de energía integrada y las rectas reconstruidas
+con los tiempos informados por el endpoint. **La detección de inicio y la
+normalización usadas para dibujar la figura son una reconstrucción diagnóstica**
+de la variante experimental (umbral del 10 %); la respuesta JSON del endpoint
+es la fuente de verdad para las tablas y el cumplimiento.
+
+#### Comparación de filtros por bandas
+
+![Filtros por bandas Livingroom](docs/m3/h045_02_comparacion_filtros.png)
+
+Se muestra la respuesta en frecuencia de filtros Butterworth y la envolvente
+de Hilbert de las seis bandas de octava. La envolvente es descriptiva,
+no se usa para sustituir la energía cuadrática de Schroeder.
+
+#### Comparación RIR-API vs. REW
+
+![Comparación contra REW Livingroom](docs/m3/h045_03_validacion_rew.png)
+
+La franja sombreada indica tolerancia según la consigna; las cruces
+rojas señalan mediciones fuera del intervalo de aceptación.
+
+Tabla detallada de las 24 comparaciones: [`docs/m3/h045_comparacion_detallada.md`](docs/m3/h045_comparacion_detallada.md).
+
+### 3. Evaluación global y limitaciones
+
+Sobre **48** comparaciones evaluables (2 recintos × 6 bandas × 4 parámetros),
+**34 cumplen**, **14** están fuera de tolerancia y
+**0** no se calcularon.
+
+La integral de Schroeder y los tiempos de decaimiento T20/T30 muestran
+una buena concordancia en estas RI, pero EDT es sensible al instante
+directo y al comportamiento no lineal de los primeros 10 dB; C80 es
+sensible a la división de energía a 80 ms. Un R² bajo no demuestra por
+sí solo una medición imposible: el criterio experimental genera una
+advertencia y conserva el valor si hay rango dinámico, puntos y pendiente válidos.
+No se ajustaron parámetros para forzar coincidencia con REW y las
+discrepancias se publican explícitamente.
+
+**Alcance:** se documenta la conformidad frente a las tolerancias de la
+consigna en estos archivos de prueba; no constituye una certificación de
+conformidad de todas las mediciones posibles con ISO 3382.
+
+### 4. Reproducibilidad y pruebas
+
+Desde la raíz del repositorio, con el entorno configurado:
+
+```powershell
+python docs/m3/validar_m3.py
+python -m pytest -v
+python -m ruff check .
+```
+
+El script procesa los WAV de `docs/m2/` y escribe en `docs/m3/` los
+gráficos, tablas, JSON, CSV y este fragmento del README. No modifica
+ni los audios originales ni el algoritmo de los servicios.
+
+Para probar la API manualmente: `python -m uvicorn app.main:app --reload`
+y subir una RI desde `http://127.0.0.1:8000/docs`.
 
 ## Tests
 
